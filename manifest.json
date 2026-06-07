@@ -1,6 +1,6 @@
 {
-  "name": "ScooterKey",
-  "short_name": "ScooterKey",
+  "name": "ScooterKeyv2",
+  "short_name": "ScooterKeyv2",
   "description": "BLE control app for o2.bike e-scooter",
   "start_url": "/",
   "display": "standalone",
