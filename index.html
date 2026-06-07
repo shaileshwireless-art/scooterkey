@@ -26,12 +26,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
 @keyframes logIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
-@keyframes hbPulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.4}100%{transform:scale(1);opacity:1}}
+@keyframes hbPulse{0%{transform:scale(1)}50%{transform:scale(1.8);opacity:.3}100%{transform:scale(1)}}
 .spin{animation:spin .75s linear infinite}
 .fadein{animation:fadeUp .3s ease forwards}
-.hb-anim{animation:hbPulse .5s ease}
 
-/* ── header ── */
 header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:center;
   border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;background:var(--bg)}
 .logo{font-size:17px;font-weight:800;color:var(--green);letter-spacing:-1px}
@@ -41,108 +39,104 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
 #conn-dot.err {background:var(--red)}
 #conn-dot.busy{background:var(--amber);animation:glow 1s ease-in-out infinite}
 #conn-label{font-size:11px;color:var(--muted);font-family:var(--mono)}
-
-/* ── tabs ── */
 #tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg)}
-.tab{flex:1;padding:11px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.5px;
+.tab{flex:1;padding:11px 2px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.5px;
   color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--green);border-bottom-color:var(--green)}
-
 .panel{display:none;flex:1;overflow-y:auto;padding:14px;gap:12px;flex-direction:column}
 .panel.active{display:flex}
 
-/* ── lock card ── */
+/* lock card */
 #lock-card{border-radius:20px;border:1px solid var(--border);background:var(--bg2);
-  padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden;transition:border-color .4s}
-#lock-card.st-locked   {border-color:#ff3f5f28}
-#lock-card.st-unlocked {border-color:#00e5a028}
-#lock-card.st-unknown  {border-color:#ffb02028}
-#lock-card.st-progress {border-color:#9d8dff28}
+  padding:24px 20px 20px;text-align:center;position:relative;overflow:hidden;transition:border-color .4s}
+#lock-card.st-locked{border-color:#ff3f5f28}
+#lock-card.st-unlocked{border-color:#00e5a028}
+#lock-card.st-unknown{border-color:#ffb02028}
+#lock-card.st-progress{border-color:#9d8dff28}
 #hero-glow{position:absolute;inset:0;pointer-events:none;transition:background .6s}
-.g-locked  {background:radial-gradient(ellipse at 50% -5%,#ff3f5f16 0%,transparent 60%)}
+.g-locked{background:radial-gradient(ellipse at 50% -5%,#ff3f5f16 0%,transparent 60%)}
 .g-unlocked{background:radial-gradient(ellipse at 50% -5%,#00e5a016 0%,transparent 60%)}
-.g-unknown {background:radial-gradient(ellipse at 50% -5%,#ffb02016 0%,transparent 60%)}
+.g-unknown{background:radial-gradient(ellipse at 50% -5%,#ffb02016 0%,transparent 60%)}
 .g-progress{background:radial-gradient(ellipse at 50% -5%,#9d8dff16 0%,transparent 60%)}
-#scooter-icon{font-size:66px;line-height:1;display:block;margin-bottom:8px;
+#scooter-icon{font-size:58px;line-height:1;display:block;margin-bottom:6px;
   filter:drop-shadow(0 4px 20px #00000060);transition:filter .4s;position:relative;z-index:1}
 #lock-card.st-unlocked #scooter-icon{filter:drop-shadow(0 0 20px #00e5a040) drop-shadow(0 4px 12px #00000050)}
 #lock-status-txt{font-size:12px;font-family:var(--mono);letter-spacing:3px;font-weight:700;margin-bottom:3px}
-#dev-label{font-size:11px;color:var(--muted);margin-bottom:20px;min-height:16px}
-#step-label{font-size:10px;font-family:var(--mono);color:var(--purple);margin-bottom:14px;min-height:14px;letter-spacing:1px}
-
-/* battery */
-#bat-sec{margin-bottom:18px;text-align:left;display:none}
+#dev-label{font-size:11px;color:var(--muted);margin-bottom:4px;min-height:16px}
+#key-label{font-size:10px;color:var(--purple);font-family:var(--mono);margin-bottom:14px;min-height:14px}
+#step-label{font-size:10px;font-family:var(--mono);color:var(--purple);margin-bottom:12px;min-height:14px;letter-spacing:.5px}
+#bat-sec{margin-bottom:14px;text-align:left;display:none}
 .bat-row2{display:flex;justify-content:space-between;margin-bottom:5px}
 .bat-lbl2{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px}
 #bat-track{height:5px;border-radius:3px;background:var(--dim);overflow:hidden}
 #bat-fill{height:100%;border-radius:3px;transition:width .6s,background .4s}
-
-/* main button */
-#main-btn{width:100%;padding:16px;border-radius:14px;border:none;font-size:15px;font-weight:700;
+#main-btn{width:100%;padding:15px;border-radius:14px;border:none;font-size:15px;font-weight:700;
   font-family:var(--sans);cursor:pointer;transition:all .25s;display:flex;align-items:center;
   justify-content:center;gap:10px;position:relative;z-index:1}
 #main-btn:disabled{background:var(--dim)!important;color:var(--muted)!important;cursor:not-allowed}
-#main-btn.s-unlock  {background:linear-gradient(135deg,var(--green),var(--green2));color:#021a0e}
-#main-btn.s-lock    {background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+#main-btn.s-unlock{background:linear-gradient(135deg,var(--green),var(--green2));color:#021a0e}
+#main-btn.s-lock{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
 #main-btn.s-progress{background:linear-gradient(135deg,var(--purple),#6a5acd);color:#fff}
-#main-btn.s-idle    {background:var(--dim);color:var(--muted)}
+#main-btn.s-idle{background:var(--dim);color:var(--muted)}
 #main-btn:not(:disabled):active{transform:scale(.97)}
 
-/* scan / action */
+/* quick controls */
+#qc-row{display:none;gap:8px}
+.qc{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--border2);background:transparent;
+  font-size:11px;font-weight:700;font-family:var(--sans);color:var(--text);cursor:pointer;transition:all .2s;text-align:center}
+.qc:hover{background:var(--bg3)}
+.qc.active-qc{border-color:var(--amber);color:var(--amber);background:#ffb02015}
+.qc.danger{border-color:#ff3f5f30;color:var(--red)}
+
 #scan-btn{width:100%;padding:16px;border-radius:14px;border:1.5px dashed var(--border2);
   background:transparent;font-size:14px;font-weight:700;font-family:var(--sans);color:var(--text);
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
 #scan-btn:disabled{opacity:.5;cursor:not-allowed}
 #action-row{display:none;gap:8px}
-.act{flex:1;padding:12px 4px;border-radius:12px;border:1px solid var(--border2);background:transparent;
-  font-size:11px;font-weight:700;font-family:var(--sans);color:var(--text);cursor:pointer;transition:all .2s}
+.act{flex:1;padding:11px 4px;border-radius:12px;border:1px solid var(--border2);background:transparent;
+  font-size:10px;font-weight:700;font-family:var(--sans);color:var(--text);cursor:pointer;transition:all .2s}
 .act:hover{background:var(--bg3)}
 .act.danger{border-color:#ff3f5f30;color:var(--red)}
-
-/* heartbeat */
 #hb-row{display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);
   border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--muted);font-family:var(--mono)}
 #hb-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:background .2s}
 #hb-dot.beat{background:var(--green);box-shadow:0 0 8px var(--green)}
 
-/* ── dashboard ── */
+/* dashboard */
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px}
 .dash-card.full{grid-column:1/-1}
 .dash-card.hl-green{border-color:#00e5a030;background:#00e5a006}
-.dash-card.hl-red  {border-color:#ff3f5f30;background:#ff3f5f06}
+.dash-card.hl-red{border-color:#ff3f5f30;background:#ff3f5f06}
 .dash-card.hl-amber{border-color:#ffb02030;background:#ffb02006}
 .dash-card.hl-purple{border-color:#9d8dff30;background:#9d8dff06}
-.dc-label{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:8px}
-.dc-val{font-size:22px;font-weight:800;line-height:1}
-.dc-unit{font-size:11px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
-.dc-sub{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px}
-.flags-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.fp{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
-  font-size:10px;font-weight:700;font-family:var(--mono);border:1px solid transparent}
-.fp.on {background:#00e5a018;color:var(--green);border-color:#00e5a030}
+.dc-label{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:7px}
+.dc-val{font-size:20px;font-weight:800;line-height:1}
+.dc-unit{font-size:10px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
+.dc-sub{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.flags-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.fp{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;
+  font-size:9px;font-weight:700;font-family:var(--mono);border:1px solid transparent}
+.fp.on{background:#00e5a018;color:var(--green);border-color:#00e5a030}
 .fp.off{background:#ff3f5f18;color:var(--red);border-color:#ff3f5f30}
-.fp.na {background:var(--dim);color:var(--muted);border-color:var(--border)}
-.fp.pu {background:#9d8dff18;color:var(--purple);border-color:#9d8dff30}
-.fd{width:5px;height:5px;border-radius:50%;background:currentColor}
-.gps-coords{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px;line-height:2}
+.fp.na{background:var(--dim);color:var(--muted);border-color:var(--border)}
+.fd{width:4px;height:4px;border-radius:50%;background:currentColor}
+.gps-coords{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;line-height:2}
 .gps-coords a{color:var(--blue);text-decoration:none}
-.no-data{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:2}
+.no-data{text-align:center;padding:32px 20px;color:var(--muted);font-size:13px;line-height:2}
 
-/* ── diagnostic ── */
-.diag-sec{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px}
-.diag-title{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:10px}
+/* diagnostic */
+.diag-sec{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px}
+.diag-title{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:9px}
 .dr{display:flex;justify-content:space-between;align-items:flex-start;
-  padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
+  padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
 .dr:last-child{border-bottom:none}
-.dk{color:var(--muted);font-family:var(--mono);font-size:10px;flex-shrink:0}
-.dv{font-weight:700;font-family:var(--mono);font-size:10px;text-align:right;word-break:break-all}
+.dk{color:var(--muted);font-family:var(--mono);font-size:9px;flex-shrink:0}
+.dv{font-weight:700;font-family:var(--mono);font-size:9px;text-align:right;word-break:break-all}
 .ok{color:var(--green)}.er{color:var(--red)}.wa{color:var(--amber)}.inf{color:var(--purple)}
-
-#uart-box{background:#040408;border:1px solid var(--border);border-radius:14px;padding:12px;max-height:260px;overflow-y:auto}
+#uart-box{background:#040408;border:1px solid var(--border);border-radius:14px;padding:12px;max-height:280px;overflow-y:auto}
 .ul{font-family:var(--mono);font-size:10px;margin-bottom:3px;line-height:1.5;word-break:break-all;animation:logIn .15s ease}
 .utx{color:var(--amber)}.urx{color:var(--purple)}.uinfo{color:var(--muted)}.uerr{color:var(--red)}.uok{color:var(--green)}.usys{color:var(--blue)}
-
 #no-bt{display:none;background:#1a0810;border:1px solid #ff3f5f30;border-radius:14px;
   padding:16px;font-size:12px;color:#ff8090;line-height:1.8}
 #no-bt code{background:#2a0a14;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:10px}
@@ -152,7 +146,6 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
 </head>
 <body>
 <div id="app">
-
 <header>
   <div class="logo">⚡ Scooter<em>Key</em></div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -160,21 +153,20 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
     <span id="conn-label" style="font-size:11px;color:var(--muted);font-family:var(--mono)">Disconnected</span>
   </div>
 </header>
-
 <div id="tabs">
   <div class="tab active" onclick="switchTab('control')">CONTROL</div>
-  <div class="tab"        onclick="switchTab('dashboard')">DASHBOARD</div>
-  <div class="tab"        onclick="switchTab('diag')">DIAGNOSTIC</div>
+  <div class="tab" onclick="switchTab('dashboard')">DASHBOARD</div>
+  <div class="tab" onclick="switchTab('diag')">DIAGNOSTIC</div>
 </div>
 
-<!-- ══ CONTROL ══ -->
+<!-- CONTROL -->
 <div id="panel-control" class="panel active">
-
   <div id="lock-card" class="st-unknown">
     <div id="hero-glow" class="g-unknown"></div>
     <span id="scooter-icon">🛴</span>
     <div id="lock-status-txt" style="color:var(--amber)">— UNKNOWN</div>
     <div id="dev-label">No device paired</div>
+    <div id="key-label"></div>
     <div id="step-label"></div>
     <div id="bat-sec">
       <div class="bat-row2">
@@ -184,6 +176,13 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
       <div id="bat-track"><div id="bat-fill"></div></div>
     </div>
     <button id="main-btn" class="s-idle" disabled onclick="handleToggle()">Connect First</button>
+  </div>
+
+  <!-- Quick controls: alarm, lights -->
+  <div id="qc-row">
+    <button class="qc" id="qc-beep" onclick="handleBeep()">📢 Find Scooter</button>
+    <button class="qc" id="qc-light" onclick="handleLight()">💡 Lights</button>
+    <button class="qc" id="qc-query" onclick="handleQuery()">🔄 Refresh</button>
   </div>
 
   <div id="hb-row">
@@ -197,46 +196,41 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
   </button>
 
   <div id="action-row">
-    <button class="act" onclick="sendQuery()">🔄 Refresh</button>
     <button class="act" onclick="switchTab('dashboard')">📊 Data</button>
     <button class="act" onclick="switchTab('diag')">🔧 Diag</button>
-    <button class="act danger" onclick="handleDisconnect()">✕</button>
+    <button class="act" onclick="handleGetInfo()">ℹ️ Info</button>
+    <button class="act danger" onclick="handleDisconnect()">✕ Disc</button>
   </div>
 
   <div id="no-bt">
     ⚠️ <strong>Web Bluetooth not supported.</strong><br/>
-    Use <strong>Chrome on Android</strong> — not Firefox, Samsung Internet, or Safari.<br/>
-    Enable flag: <code>chrome://flags/#enable-web-bluetooth</code>
+    Use <strong>Chrome on Android</strong>.<br/>
+    Enable: <code>chrome://flags/#enable-web-bluetooth</code>
   </div>
-
 </div>
 
-<!-- ══ DASHBOARD ══ -->
+<!-- DASHBOARD -->
 <div id="panel-dashboard" class="panel">
   <div id="dash-no-data" class="no-data">
-    🔌 Connect to scooter first.<br/>
-    Dashboard fills automatically<br/>when the box sends heartbeats.
+    🔌 Connect to scooter first.<br/>Dashboard fills from live data.
   </div>
   <div id="dash-content" style="display:none;flex-direction:column;gap:10px">
-
     <div class="dash-grid">
       <div class="dash-card" id="dc-lock-card">
         <div class="dc-label">LOCK STATE</div>
         <div class="dc-val" id="dc-lock">—</div>
         <div class="dc-sub" id="dc-lock-sub"></div>
       </div>
-      <div class="dash-card" id="dc-locking-card">
-        <div class="dc-label">LOCKING STATE</div>
-        <div class="dc-val" id="dc-locking" style="font-size:16px">—</div>
-        <div class="dc-sub">0=idle  1=in-progress</div>
+      <div class="dash-card">
+        <div class="dc-label">LOGIN STATE</div>
+        <div class="dc-val" id="dc-login" style="font-size:16px">—</div>
       </div>
     </div>
-
     <div class="dash-grid">
       <div class="dash-card hl-green">
         <div class="dc-label">BATTERY</div>
         <div class="dc-val"><span id="dc-power" style="color:var(--green)">—</span><span class="dc-unit">%</span></div>
-        <div class="dc-sub" id="dc-charging-lbl">charging: —</div>
+        <div class="dc-sub" id="dc-charging-lbl"></div>
       </div>
       <div class="dash-card">
         <div class="dc-label">VOLTAGE</div>
@@ -244,19 +238,18 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
         <div class="dc-sub" id="dc-volt-v"></div>
       </div>
     </div>
-
     <div class="dash-grid">
       <div class="dash-card">
         <div class="dc-label">SIGNAL</div>
-        <div class="dc-val"><span id="dc-signal" style="color:var(--blue)">—</span><span class="dc-unit">dBm</span></div>
+        <div class="dc-val"><span id="dc-signal" style="color:var(--blue)">—</span><span class="dc-unit">/32</span></div>
+        <div class="dc-sub">GSM signal</div>
       </div>
       <div class="dash-card">
-        <div class="dc-label">LOGIN STATE</div>
-        <div class="dc-val" id="dc-login" style="font-size:16px">—</div>
-        <div class="dc-sub">0=out  1=in</div>
+        <div class="dc-label">LOCKING STATE</div>
+        <div class="dc-val" id="dc-locking" style="font-size:15px">—</div>
+        <div class="dc-sub">0=idle 1=busy</div>
       </div>
     </div>
-
     <div class="dash-card full">
       <div class="dc-label">STATUS FLAGS</div>
       <div class="flags-row" id="flags-row">
@@ -266,430 +259,386 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
         <span class="fp na"><span class="fd"></span>LOCKING</span>
       </div>
     </div>
-
     <div class="dash-card full">
       <div class="dc-label">GPS LOCATION</div>
-      <div id="dc-gps-valid" style="font-size:16px;font-weight:800;color:var(--muted)">—</div>
+      <div id="dc-gps-valid" style="font-size:15px;font-weight:800;color:var(--muted)">—</div>
       <div id="dc-gps-coords" class="gps-coords" style="display:none">
         <div>LAT <span id="dc-lat"></span> &nbsp;&nbsp; LNG <span id="dc-lng"></span></div>
-        <div>ALT <span id="dc-alt"></span> &nbsp;&nbsp; ACC <span id="dc-acc"></span>m &nbsp;&nbsp; SAT <span id="dc-sat"></span></div>
-        <div>GPS TIME <span id="dc-gtime"></span></div>
+        <div>ALT <span id="dc-alt"></span> &nbsp;&nbsp; ACC <span id="dc-acc"></span></div>
+        <div>TIME <span id="dc-gtime"></span></div>
         <div style="margin-top:6px"><a id="maps-a" href="#" target="_blank">📍 Open in Google Maps</a></div>
       </div>
     </div>
-
     <div class="dash-grid">
       <div class="dash-card">
-        <div class="dc-label">LAST CYCLING TIME</div>
-        <div class="dc-val" id="dc-cycling" style="font-size:16px;color:var(--purple)">—</div>
+        <div class="dc-label">LAST CYCLING</div>
+        <div class="dc-val" id="dc-cycling" style="font-size:15px;color:var(--purple)">—</div>
       </div>
       <div class="dash-card">
         <div class="dc-label">GPS STATE</div>
-        <div class="dc-val" id="dc-gps-state" style="font-size:16px">—</div>
-        <div class="dc-sub">0=idle  1=tracking</div>
+        <div class="dc-val" id="dc-gps-state" style="font-size:15px">—</div>
+        <div class="dc-sub">0=idle 1=tracking</div>
       </div>
     </div>
-
     <div class="dash-card full">
       <div class="dc-label">DEVICE IMEI</div>
-      <div id="dc-imei" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted)">—</div>
+      <div id="dc-imei" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted)">—</div>
     </div>
-
     <div style="text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)">
-      Updated: <span id="last-upd">—</span> &nbsp;·&nbsp; Heartbeats: <span id="hb-count">0</span>
+      Updated: <span id="last-upd">—</span> &nbsp;·&nbsp; HB: <span id="hb-count">0</span>
     </div>
   </div>
 </div>
 
-<!-- ══ DIAGNOSTIC ══ -->
+<!-- DIAGNOSTIC -->
 <div id="panel-diag" class="panel">
-
   <div class="diag-sec">
     <div class="diag-title">BLE CONNECTION</div>
-    <div class="dr"><span class="dk">Web Bluetooth</span><span class="dv" id="d-wb">checking…</span></div>
+    <div class="dr"><span class="dk">Web Bluetooth</span><span class="dv" id="d-wb">—</span></div>
     <div class="dr"><span class="dk">Phase</span><span class="dv" id="d-phase">idle</span></div>
     <div class="dr"><span class="dk">Device name</span><span class="dv" id="d-devname">—</span></div>
-    <div class="dr"><span class="dk">IMEI</span><span class="dv" id="d-imei">—</span></div>
     <div class="dr"><span class="dk">NUS service</span><span class="dv" id="d-nus">—</span></div>
-    <div class="dr"><span class="dk">TX char (write)</span><span class="dv" id="d-tx">—</span></div>
-    <div class="dr"><span class="dk">RX notifications</span><span class="dv" id="d-rx">—</span></div>
-    <div class="dr"><span class="dk">RX messages total</span><span class="dv" id="d-rxcount">0</span></div>
+    <div class="dr"><span class="dk">TX char</span><span class="dv" id="d-tx">—</span></div>
+    <div class="dr"><span class="dk">RX notify</span><span class="dv" id="d-rx">—</span></div>
+    <div class="dr"><span class="dk">RX frames total</span><span class="dv" id="d-rxcount">0</span></div>
   </div>
-
   <div class="diag-sec">
-    <div class="diag-title">HANDSHAKE STATE (2-step lock/unlock)</div>
-    <div class="dr"><span class="dk">handshake_phase</span><span class="dv" id="d-hphase">idle</span></div>
-    <div class="dr"><span class="dk">operation_key</span><span class="dv inf" id="d-opkey">—</span></div>
-    <div class="dr"><span class="dk">lock_timestamp</span><span class="dv" id="d-ts">—</span></div>
-    <div class="dr"><span class="dk">pending_action</span><span class="dv" id="d-pending">—</span></div>
-  </div>
-
-  <div class="diag-sec">
-    <div class="diag-title">SCOOTER STATE (from box messages)</div>
-    <div class="dr"><span class="dk">locked</span><span class="dv" id="d-locked">—</span></div>
+    <div class="diag-title">BLE HANDSHAKE (per protocol doc §2.3)</div>
+    <div class="dr"><span class="dk">hs_phase</span><span class="dv" id="d-hphase">idle</span></div>
+    <div class="dr"><span class="dk">KEY_once (from lock)</span><span class="dv inf" id="d-keyonce">—</span></div>
+    <div class="dr"><span class="dk">device_key used</span><span class="dv" id="d-devkey">OmniW4GX</span></div>
+    <div class="dr"><span class="dk">pending cmd</span><span class="dv" id="d-pendcmd">—</span></div>
+    <div class="dr"><span class="dk">lock state</span><span class="dv" id="d-locked">—</span></div>
     <div class="dr"><span class="dk">voltage</span><span class="dv" id="d-volt">—</span></div>
     <div class="dr"><span class="dk">power</span><span class="dv" id="d-pwr">—</span></div>
     <div class="dr"><span class="dk">signal</span><span class="dv" id="d-sig">—</span></div>
-    <div class="dr"><span class="dk">charging</span><span class="dv" id="d-chg">—</span></div>
-    <div class="dr"><span class="dk">gps_valid</span><span class="dv" id="d-gps">—</span></div>
-    <div class="dr"><span class="dk">locking_state</span><span class="dv" id="d-ls">—</span></div>
-    <div class="dr"><span class="dk">loggin_state</span><span class="dv" id="d-login">—</span></div>
+    <div class="dr"><span class="dk">last RX hex</span><span class="dv inf" id="d-rawhex" style="font-size:8px;max-width:200px">—</span></div>
     <div class="dr"><span class="dk">last msg type</span><span class="dv inf" id="d-msgtype">—</span></div>
-    <div class="dr"><span class="dk">last raw RX</span><span class="dv inf" id="d-raw" style="font-size:9px">—</span></div>
   </div>
-
   <div class="diag-sec" style="padding-bottom:10px">
-    <div class="diag-title">UART MONITOR (live · TX=amber RX=purple)</div>
+    <div class="diag-title">UART MONITOR (TX=amber · RX=purple · SYS=blue)</div>
     <div id="uart-box"></div>
   </div>
-
+</div>
 </div>
 
-</div><!-- #app -->
 <script>
 // ════════════════════════════════════════════════════════════════════════════
-//  PROTOCOL — fully reverse-engineered from box-server.js + testclient.js
+//  OMNI SCOOTER IoT — COMPLETE BLE PROTOCOL
+//  Source: IoT_communication_v3.pdf (Omni 欧米智能) v1.2.0
 //
-//  KEY INSIGHT: lock/unlock is a 2-STEP HANDSHAKE
+//  Section 2: BLE uses BINARY frames, NOT ASCII text
+//  Frame format: [0xA3][0xA4][LEN][RAND][KEY_once][CMD][DATA...][CRC8]
 //
-//  UNLOCK flow:
-//    Step 1 — App sends:  ÿÿ*SCOS,OM,IMEI,R0,0,20,1234,{ts}#\n   (INIT-UNLOCK)
-//    Step 2 — Box replies: *SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}#
-//             Box gives us operation_key in field[5]
-//    Step 3 — App sends:  ÿÿ*SCOS,OM,IMEI,L0,{op_key},1234,{ts}#\n  (actual UNLOCK)
-//    Step 4 — Box replies: *SCOR,OM,IMEI,L0,0,...#  (L0 result: 0=success)
-//             App updates locked=0, locking_state=0
+//  Encryption:
+//    1. RAND = random byte
+//    2. RAND_1 = RAND + 0x32  → place in byte[3]
+//    3. XOR all bytes from byte[4] onward (before CRC) with RAND
+//    4. CRC8 (table-based) of encrypted bytes → append
 //
-//  LOCK flow:
-//    Step 1 — App sends:  ÿÿ*SCOS,OM,IMEI,R0,1,20,1234,{ts}#\n   (INIT-LOCK)
-//    Step 2 — Box replies: *SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}#
-//    Step 3 — App sends:  ÿÿ*SCOS,OM,IMEI,L1,{op_key}#\n          (actual LOCK)
-//    Step 4 — Box replies: *SCOR,OM,IMEI,L1,0,...#  (L1 result: 0=success)
+//  UUIDs (§2.4):
+//    Service: 6e400001-b5a3-f393-e0a9-e50e24dcca9e  (NUS — same as before)
+//    Write:   6e400002-b5a3-f393-e0a9-e50e24dcca9e
+//    Notify:  6e400003-b5a3-f393-e0a9-e50e24dcca9e
 //
-//  NOTE: Commands have 0xFF 0xFF header prefix (from makeCommand: HEADER = \xFF\xFF*SCOS)
-//  NOTE: All messages end with #\n
+//  BLE Command flow (§2.3):
+//    1. Connect
+//    2. Send 0x01 with device KEY "OmniW4GX" → get KEY_once back
+//    3. Use KEY_once in all subsequent frames
 //
-//  Box → App messages (we RECEIVE):
-//    Q0 — initial: volt, power, signal
-//    H0 — heartbeat: locked, volt, signal, power, charging
-//    R0 — init-ack: state(1=lock/0=unlock), op_key, pin, ts
-//    L0 — unlock result: 0=success 1=fail 2=key error
-//    L1 — lock result:   0=success 1=fail 2=key error
-//    D0 — GPS data
-//    D1 — GPS tracking started
-//    W0 — alarm
-//    E0 — fault
+//  Commands:
+//    0x01  Verify device KEY → get KEY_once
+//    0x05  Unlock
+//    0x15  Lock
+//    0x31  Query lock status (battery, locked state)
+//    0x51  Get last usage data
+//    0x52  Clear usage data
+//    0x60  Get scooter info (speed, mode, mileage)
+//    0x61  Scooter settings (lights, mode, throttle, taillights)
+//    0x13  BLE configuration
+//    0x10  Error response from lock
+//
+//  For beep/alarm: use NUS ASCII V0 command (TCP/NUS text layer)
 // ════════════════════════════════════════════════════════════════════════════
 
+// NUS UUIDs
 const NUS_SVC = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-const NUS_TX  = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // app writes
-const NUS_RX  = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // app reads (notify)
+const NUS_TX  = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const NUS_RX  = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
+// Default device KEY: "OmniW4GX" = bytes [0x4F,0x6D,0x6E,0x69,0x57,0x34,0x47,0x58]
+const DEVICE_KEY = [0x4F,0x6D,0x6E,0x69,0x57,0x34,0x47,0x58];
+const USER_ID = 1234;  // 4-byte user ID
 const VENDOR  = 'OM';
-const USER_ID = '1234'; // from box-server.js: const USER_ID = "1234"
 
-// 0xFF 0xFF prefix — from box-server.js: String.fromCharCode(0xFF,0xFF) + '*SCOS'
-const HDR = '\xFF\xFF*SCOS';
+// CRC8 table from Appendix II of protocol doc
+const CRC8_TABLE = [
+  0,94,188,226,97,63,221,131,194,156,126,32,163,253,31,65,
+  157,195,33,127,252,162,64,30,95,1,227,189,62,96,130,220,
+  35,125,159,193,66,28,254,160,225,191,93,3,128,222,60,98,
+  190,224,2,92,223,129,99,61,124,34,192,158,29,67,161,255,
+  70,24,250,164,39,121,155,197,132,218,56,102,229,187,89,7,
+  219,133,103,57,186,228,6,88,25,71,165,251,120,38,196,154,
+  101,59,217,135,4,90,184,230,167,249,27,69,198,152,122,36,
+  248,166,68,26,153,199,37,123,58,100,134,216,91,5,231,185,
+  140,210,48,110,237,179,81,15,78,16,242,172,47,113,147,205,
+  17,79,173,243,112,46,204,146,211,141,111,49,178,236,14,80,
+  175,241,19,77,206,144,114,44,109,51,209,143,12,82,176,238,
+  50,108,142,208,83,13,239,177,240,174,76,18,145,207,45,115,
+  202,148,118,40,171,245,23,73,8,86,180,234,105,55,213,139,
+  87,9,235,181,54,104,138,212,149,203,41,119,244,170,72,22,
+  233,183,85,11,136,214,52,106,43,117,151,201,74,20,246,168,
+  116,42,200,150,21,75,169,247,182,232,10,84,215,137,107,53
+];
+
+function crc8(bytes) {
+  let crc = 0;
+  for (const b of bytes) crc = CRC8_TABLE[crc ^ b];
+  return crc;
+}
+
+// ── BLE Frame Builder ────────────────────────────────────────────────────────
+// Builds encrypted frame per §2.2
+// [0xA3][0xA4][LEN][RAND_1][KEY_once][CMD][DATA...][CRC8]
+function buildFrame(cmd, data, keyOnce) {
+  const dataLen = data.length;
+  const RAND = Math.floor(Math.random() * 256);
+  const RAND_1 = (RAND + 0x32) & 0xFF;
+  const KEY = keyOnce || 0x00;
+
+  // plaintext payload: [KEY_once, CMD, ...DATA]
+  const plain = [KEY, cmd, ...data];
+
+  // XOR with RAND (step 4)
+  const encrypted = plain.map(b => b ^ RAND);
+
+  // Assemble full frame (before CRC)
+  // [0xA3, 0xA4, LEN, RAND_1, ...encrypted]
+  const preCRC = [0xA3, 0xA4, dataLen, RAND_1, ...encrypted];
+
+  // CRC8 of preCRC
+  const crcVal = crc8(preCRC);
+
+  return new Uint8Array([...preCRC, crcVal]);
+}
+
+// ── Frame Decryptor ──────────────────────────────────────────────────────────
+// Returns {cmd, data, keyOnce} or null
+function decryptFrame(bytes) {
+  // Find 0xA3 0xA4 header
+  let start = -1;
+  for (let i = 0; i < bytes.length - 1; i++) {
+    if (bytes[i] === 0xA3 && bytes[i+1] === 0xA4) { start = i; break; }
+  }
+  if (start < 0) return null;
+
+  const LEN    = bytes[start + 2];
+  const RAND_1 = bytes[start + 3];
+  const RAND   = (RAND_1 - 0x32 + 256) & 0xFF;
+
+  const encStart = start + 4;
+  const encEnd   = encStart + 1 + 1 + LEN; // KEY_once + CMD + DATA
+  if (bytes.length < encEnd + 1) return null;
+
+  // XOR decrypt
+  const decrypted = [];
+  for (let i = encStart; i < encEnd; i++) {
+    decrypted.push(bytes[i] ^ RAND);
+  }
+
+  const keyOnce = decrypted[0];
+  const cmd     = decrypted[1];
+  const data    = decrypted.slice(2);
+
+  // Verify CRC
+  const preCRC  = [...bytes.slice(start, encEnd)];
+  const calcCRC = crc8(preCRC);
+  const rxCRC   = bytes[encEnd];
+
+  return { cmd, data, keyOnce, crcOk: calcCRC === rxCRC, rand: RAND };
+}
 
 function nowTs()   { return Math.floor(Date.now() / 1000); }
 function timeStr() { return new Date().toLocaleTimeString('en-GB',{hour12:false}); }
+function toHex(bytes) { return Array.from(bytes).map(b=>'0x'+b.toString(16).toUpperCase().padStart(2,'0')).join(' '); }
 
-// ── Commands (APP → BOX) ─────────────────────────────────────────────────────
-// All from makeCommand() in box-server.js
-
-// INIT-UNLOCK: R0,0 = "I want to unlock"
-function CMD_INIT_UNLOCK(imei, ts) {
-  // *SCOS,OM,IMEI,R0,0,20,1234,{ts}#\n
-  return `${HDR},${VENDOR},${imei},R0,0,20,${USER_ID},${ts}#\n`;
-}
-
-// INIT-LOCK: R0,1 = "I want to lock"
-function CMD_INIT_LOCK(imei, ts) {
-  // *SCOS,OM,IMEI,R0,1,20,1234,{ts}#\n
-  return `${HDR},${VENDOR},${imei},R0,1,20,${USER_ID},${ts}#\n`;
-}
-
-// UNLOCK (step 2): uses op_key received from box's R0 response
-function CMD_UNLOCK(imei, op_key, ts) {
-  // *SCOS,OM,IMEI,L0,{op_key},1234,{ts}#\n
-  return `${HDR},${VENDOR},${imei},L0,${op_key},${USER_ID},${ts}#\n`;
-}
-
-// LOCK (step 2): uses op_key
-function CMD_LOCK(imei, op_key) {
-  // *SCOS,OM,IMEI,L1,{op_key}#\n
-  return `${HDR},${VENDOR},${imei},L1,${op_key}#\n`;
-}
-
-// ACK messages (app must acknowledge certain box messages)
-function CMD_UNLOCK_CONFIRM(imei) { return `${HDR},${VENDOR},${imei},L0#\n`; }
-function CMD_LOCK_CONFIRM(imei)   { return `${HDR},${VENDOR},${imei},L1#\n`; }
-function CMD_ALARM_ACK(imei)      { return `${HDR},${VENDOR},${imei},W0#\n`; }
-function CMD_FAULT_ACK(imei)      { return `${HDR},${VENDOR},${imei},E0#\n`; }
-function CMD_START_TRACKING(imei) { return `${HDR},${VENDOR},${imei},D1,30#\n`; }
-function CMD_STOP_TRACKING(imei)  { return `${HDR},${VENDOR},${imei},D1,0#\n`; }
-
-// ── State ────────────────────────────────────────────────────────────────────
-let bleDevice = null, txChar = null;
-let phase = 'idle'; // idle|scanning|connecting|ready|error
-let rxBuffer = '';
-let rxCount = 0, hbCount = 0;
-
-// Mirrors BoxStateInit() from box-server.js
-const S = {
-  vendor_code: null,
-  imei: '',
-  locked: -1,         // 1=locked, 0=unlocked, -1=unknown
-  voltage: -1,
-  power: -1,
-  signal: -1,
-  charging: -1,
-  gps_valid: false,
-  latitude: -1,
-  longitude: -1,
-  gps_accuracy: '0',
-  altitude: '0M',
-  gps_time: '',
-  loggin_state: 0,    // 0=not logged in, 1=logged in
-  locking_state: 0,   // 0=idle, 1=in-progress
-  gps_state: 0,       // 0=idle, 1=in-progress
-  lock_timestamp: 0,
-  operation_key: null,
-  last_cycling_time: '0',
-  last_msg_type: '',
-};
-
-// Handshake state — tracks 2-step lock/unlock
-const HS = {
-  phase: 'idle',     // idle | init_sent | step2_sent
-  action: null,      // 'lock' | 'unlock'
-  ts: 0,
-};
-
-function hsIdle()    { HS.phase='idle'; HS.action=null; updateDiagHS(); }
-function hsInitSent(action, ts) { HS.phase='init_sent'; HS.action=action; HS.ts=ts; updateDiagHS(); }
-function hsStep2Sent(){ HS.phase='step2_sent'; updateDiagHS(); }
-
-// ── GPS helpers (from box-server.js: calcLatitude / calcLongitude) ────────────
-function calcLatitude(lat, hemi) {
+// ── GPS Converters ────────────────────────────────────────────────────────────
+function calcLat(lat, hemi) {
   const deg = parseFloat(lat.substring(0,2));
-  let min   = parseFloat(lat.substring(2)) / 60;
-  const v   = deg + min;
-  return hemi === 'N' ? v : -v;
+  const min = parseFloat(lat.substring(2)) / 60;
+  return hemi==='N' ? deg+min : -(deg+min);
 }
-function calcLongitude(lon, hemi) {
+function calcLng(lon, hemi) {
   const deg = parseFloat(lon.substring(0,3));
-  let min   = parseFloat(lon.substring(3)) / 60;
-  const v   = deg + min;
-  return hemi === 'E' ? v : -v;
+  const min = parseFloat(lon.substring(3)) / 60;
+  return hemi==='E' ? deg+min : -(deg+min);
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-//  PARSER — mirrors processResponse() in box-server.js
+//  STATE
 // ════════════════════════════════════════════════════════════════════════════
-function parseLine(raw) {
-  // Strip 0xFF 0xFF header bytes and * prefix, trim whitespace and #
-  let line = raw.replace(/[\xFF\xFE]+/g,'').trim().replace(/^[\*]+/,'').replace(/#+$/,'').trim();
-  if (!line) return null;
+let bleDevice = null, txChar = null;
+let phase = 'idle';
+let rxBuf = new Uint8Array(0);
+let rxCount = 0, hbCount = 0;
+let keyOnce = 0x00;   // received from 0x01 handshake
+let hsPhase = 'idle'; // idle | waiting_key | ready
+let pendingCmd = null; // command waiting to send after key handshake
+let lockBusy = false;
+let lightOn = false;
 
-  const p    = line.split(',');
-  const type = p[0]; // SCOR or SCOS
-  const cmd  = p[3];
+const S = {
+  imei:'', locked:-1, voltage:-1, power:-1, signal:-1, charging:-1,
+  gps_valid:false, latitude:-1, longitude:-1, gps_accuracy:'0',
+  altitude:'0M', gps_time:'', loggin_state:0, locking_state:0,
+  gps_state:0, last_cycling_time:'0', last_msg_type:'',
+  // BLE-specific (from 0x31 response)
+  bat_mv:0, ble_locked:false, fw_major:0, fw_minor:0, fw_rev:0,
+};
 
-  if (type !== 'SCOR' && type !== 'SCOS') {
-    if (line.startsWith('{')) {
-      try { return {kind:'json', data:JSON.parse(line)}; } catch(e){}
-    }
-    return {kind:'unknown', raw:line};
-  }
+// ════════════════════════════════════════════════════════════════════════════
+//  BLE FRAME HANDLERS
+// ════════════════════════════════════════════════════════════════════════════
+async function handleBLEFrame(parsed) {
+  const { cmd, data } = parsed;
+  S.last_msg_type = '0x'+cmd.toString(16).toUpperCase();
 
-  const imei = p[2];
-  if (imei && imei.length >= 10) S.imei = imei;
-  if (p[1]) S.vendor_code = p[1];
+  addUART(`← CMD=0x${cmd.toString(16).toUpperCase()} DATA=[${data.map(b=>b.toString(16).padStart(2,'0')).join(' ')}]`, 'urx');
 
   switch(cmd) {
-    case 'Q0': //*SCOR,OM,IMEI,Q0,412,80,28
-      return {kind:'Q0', voltage:p[4], power:p[5], signal:p[6]};
-
-    case 'H0': //*SCOR,OM,IMEI,H0,{locked},{volt},{signal},{power},{charging}
-      return {kind:'H0',
-        locked:   parseInt(p[4]),
-        voltage:  p[5],
-        signal:   p[6],
-        power:    p[7],
-        charging: p[8],
-      };
-
-    case 'R0': //*SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}
-      // state: 1=init-lock, 0=init-unlock (from box-server: operation=msg_parts[4]==1?"lock":"unlock")
-      return {kind:'R0',
-        state:   parseInt(p[4]), // 1=lock op, 0=unlock op
-        op_key:  p[5],           // operation_key — CRITICAL for step 2
-        pin:     p[6],
-        ts:      p[7],
-      };
-
-    case 'L0': //*SCOR,OM,IMEI,L0,{result}   0=success 1=fail 2=key error
-      return {kind:'L0', result:parseInt(p[4])};
-
-    case 'L1': //*SCOR,OM,IMEI,L1,{result},{pin},{ts},{cycling_time}
-      return {kind:'L1',
-        result:       parseInt(p[4]),
-        cycling_time: p[7],
-      };
-
-    case 'D0': //*SCOR,OM,IMEI,D0,{fix},{time},{valid},{lat},{NS},{lng},{EW},{sats},{speed},{date},{alt},{M},{mode}
-      const valid = p[6] === 'A';
-      let lat = -1, lng = -1;
-      if (valid) {
-        try {
-          lat = calcLatitude(p[7], p[8]);
-          lng = calcLongitude(p[9], p[10]);
-        } catch(e) {}
+    case 0x01: // Verify device KEY response → get KEY_once
+      if (data[0] === 1) { // success
+        keyOnce = data[1];
+        hsPhase = 'ready';
+        addUART(`✅ KEY_once received: 0x${keyOnce.toString(16).toUpperCase()}`, 'uok');
+        document.getElementById('d-keyonce').textContent = '0x'+keyOnce.toString(16).toUpperCase();
+        document.getElementById('d-hphase').textContent  = 'ready';
+        document.getElementById('d-hphase').className    = 'dv ok';
+        // Now execute pending command if any
+        if (pendingCmd) {
+          const toExec = pendingCmd; pendingCmd = null;
+          document.getElementById('d-pendcmd').textContent = '—';
+          addUART(`Executing pending: ${toExec.name}`, 'usys');
+          setStepLabel('');
+          await toExec();
+        } else {
+          // Auto-query status on first connect
+          setTimeout(() => sendBLECmd_QueryStatus(), 300);
+        }
+      } else {
+        addUART('❌ KEY verification FAILED — wrong device KEY', 'uerr');
+        setStepLabel('Auth failed — wrong device KEY');
+        hsPhase = 'idle';
       }
-      return {kind:'D0', valid, lat, lng,
-        accuracy: p[11], alt: (p[13]||'0')+(p[14]||'M'),
-        gps_time: p[5], sats: parseInt(p[11])||0};
+      break;
 
-    case 'D1': //*SCOR,OM,IMEI,D1,{interval}
-      return {kind:'D1', interval: p[4]};
+    case 0x10: // Error
+      const errMap = {1:'CRC error', 2:'No comm KEY', 3:'Wrong comm KEY'};
+      addUART(`⚠ Lock error: ${errMap[data[0]] || 'unknown'} (${data[0]})`, 'uerr');
+      setStepLabel(`Error: ${errMap[data[0]] || 'code '+data[0]}`);
+      lockBusy = false;
+      break;
 
-    case 'W0': //*SCOR,OM,IMEI,W0,{alarm_type}
-      return {kind:'W0', alarm_type: p[4]};
+    case 0x05: // Unlock result
+      if (data[0] === 1) { // success
+        S.locked = 0; S.ble_locked = false;
+        addUART('✅ UNLOCK SUCCESS', 'uok');
+        setStepLabel('');
+        // Reply to lock (ack)
+        setTimeout(() => sendBLECmd_Raw(0x05, [0x02]), 200);
+      } else {
+        addUART(`❌ UNLOCK FAILED (${data[0]})`, 'uerr');
+        setStepLabel('Unlock failed');
+      }
+      lockBusy = false;
+      break;
 
-    case 'E0': //*SCOR,OM,IMEI,E0,{fault_code}
-      return {kind:'E0', fault_code: p[4]};
+    case 0x15: // Lock result
+      if (data[0] === 1) { // success
+        S.locked = 1; S.ble_locked = true;
+        const ts = (data[1]<<24)|(data[2]<<16)|(data[3]<<8)|data[4];
+        const rideSec = (data[5]<<24)|(data[6]<<16)|(data[7]<<8)|data[8];
+        S.last_cycling_time = String(rideSec);
+        addUART(`✅ LOCK SUCCESS — ride time: ${rideSec}s`, 'uok');
+        setStepLabel('');
+        // Reply ack
+        setTimeout(() => sendBLECmd_Raw(0x15, [0x01]), 200);
+      } else {
+        addUART(`❌ LOCK FAILED (${data[0]})`, 'uerr');
+        setStepLabel('Lock failed');
+      }
+      lockBusy = false;
+      break;
+
+    case 0x31: // Query lock info response
+      // byte 6-7: bat voltage mV (high, low)
+      // byte 8: device status byte (bit0=unlock, bit1=lock, bit6=old data)
+      if (data.length >= 7) {
+        const batMV = (data[0]<<8)|data[1];
+        const status = data[2]; // device_status_1 byte
+        const unlocked = !!(status & 0x01);
+        const locked   = !!(status & 0x02);
+        S.ble_locked = locked;
+        S.locked = locked ? 1 : (unlocked ? 0 : -1);
+        S.bat_mv = batMV;
+        // approx % from mV (3.3-4.2V range for LiPo)
+        S.power = Math.max(0, Math.min(100, Math.round((batMV - 3300) / 9)));
+        S.voltage = batMV;
+        S.fw_major = data[4]; S.fw_minor = data[5]; S.fw_rev = data[6];
+        addUART(`0x31: bat=${batMV}mV locked=${locked} unlocked=${unlocked} fw=${data[4]}.${data[5]}.${data[6]}`, 'uok');
+      }
+      break;
+
+    case 0x60: // Get scooter info response
+      if (data.length >= 8) {
+        addUART(`0x60: power=${data[0]}% mode=${data[1]} speed=${((data[2]<<8)|data[3])/10}km/h`, 'uok');
+        S.power = data[0];
+      }
+      break;
+
+    case 0x61: // Scooter setting ack
+      addUART(`0x61: setting result=${data[0]===0?'OK':'FAIL'}`, data[0]===0?'uok':'uerr');
+      break;
 
     default:
-      return {kind:'unknown', raw:line};
+      addUART(`Unknown BLE cmd 0x${cmd.toString(16)}: [${data.map(b=>b.toString(16)).join(' ')}]`, 'uinfo');
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  APPLY PARSED + HANDSHAKE STATE MACHINE
-// ════════════════════════════════════════════════════════════════════════════
-async function applyParsed(parsed) {
-  if (!parsed) return;
-  S.last_msg_type = parsed.kind;
-
-  switch(parsed.kind) {
+// Also handle NUS ASCII frames (TCP-style H0, Q0 etc that may still come through)
+function handleNUSAscii(text) {
+  text = text.trim();
+  addUART(`← ASCII: ${text.slice(0,80)}`, 'urx');
+  const p = text.replace(/^[\*\xFF\xFE]+/,'').replace(/#+$/,'').trim().split(',');
+  const cmd = p[3];
+  switch(cmd) {
     case 'Q0':
-      S.voltage = parsed.voltage;
-      S.power   = parsed.power;
-      S.signal  = parsed.signal;
+      S.voltage = parseInt(p[4])||S.voltage;
+      S.power   = parseInt(p[5])||S.power;
+      S.signal  = parseInt(p[6])||S.signal;
+      if(p[2] && p[2].length>=10) S.imei=p[2];
       break;
-
     case 'H0':
-      S.locked   = parsed.locked;
-      S.voltage  = parsed.voltage;
-      S.signal   = parsed.signal;
-      S.power    = parsed.power;
-      S.charging = parsed.charging;
-      hbCount++;
-      pulseHeartbeat();
+      S.locked   = parseInt(p[4]);
+      S.voltage  = parseInt(p[5])||S.voltage;
+      S.signal   = parseInt(p[6])||S.signal;
+      S.power    = parseInt(p[7])||S.power;
+      S.charging = parseInt(p[8]);
+      if(p[2] && p[2].length>=10) S.imei=p[2];
+      hbCount++; pulseHeartbeat();
       break;
-
-    case 'R0':
-      // Box acknowledged INIT — now send step 2
-      S.operation_key = parsed.op_key;
-      addUART(`R0 received: state=${parsed.state} op_key=${parsed.op_key}`, 'uinfo');
-
-      if (HS.phase === 'init_sent') {
-        if (HS.action === 'unlock') {
-          // Send actual unlock: L0
-          addUART('Step 2: sending UNLOCK (L0)…', 'usys');
-          setStepLabel('Step 2/2 — Sending unlock…');
-          const cmd = CMD_UNLOCK(S.imei, parsed.op_key, HS.ts);
-          hsStep2Sent();
-          await writeBLE(cmd);
-        } else if (HS.action === 'lock') {
-          // Send actual lock: L1
-          addUART('Step 2: sending LOCK (L1)…', 'usys');
-          setStepLabel('Step 2/2 — Sending lock…');
-          const cmd = CMD_LOCK(S.imei, parsed.op_key);
-          hsStep2Sent();
-          await writeBLE(cmd);
-        }
-      } else {
-        addUART('R0 received but no pending handshake — ignoring', 'uerr');
-      }
-      break;
-
-    case 'L0':
-      // Unlock result
-      if (parsed.result === 0) {
-        S.locked        = 0;
-        S.locking_state = 0;
-        addUART('✅ UNLOCK SUCCESS — scooter unlocked', 'uok');
-        setStepLabel('');
-        // Send confirm ack
-        await writeBLE(CMD_UNLOCK_CONFIRM(S.imei));
-      } else {
-        addUART(`❌ UNLOCK FAILED — result code: ${parsed.result} (1=fail 2=key error)`, 'uerr');
-        setStepLabel(`Unlock failed (code ${parsed.result})`);
-        S.locking_state = 0;
-      }
-      hsIdle();
-      break;
-
-    case 'L1':
-      // Lock result
-      if (parsed.result === 0) {
-        S.locked        = 1;
-        S.locking_state = 0;
-        if (parsed.cycling_time) S.last_cycling_time = parsed.cycling_time;
-        addUART('✅ LOCK SUCCESS — scooter locked', 'uok');
-        setStepLabel('');
-        // Send confirm ack
-        await writeBLE(CMD_LOCK_CONFIRM(S.imei));
-      } else {
-        addUART(`❌ LOCK FAILED — result code: ${parsed.result}`, 'uerr');
-        setStepLabel(`Lock failed (code ${parsed.result})`);
-        S.locking_state = 0;
-      }
-      hsIdle();
-      break;
-
     case 'D0':
-      S.gps_valid  = parsed.valid;
-      S.latitude   = parsed.lat;
-      S.longitude  = parsed.lng;
-      S.gps_accuracy = parsed.accuracy;
-      S.altitude   = parsed.alt;
-      S.gps_time   = parsed.gps_time;
+      const valid = p[6]==='A';
+      S.gps_valid = valid;
+      if(valid) {
+        try{ S.latitude=calcLat(p[7],p[8]); S.longitude=calcLng(p[9],p[10]); }catch(e){}
+        S.gps_accuracy=p[11]; S.altitude=(p[13]||'0')+(p[14]||'M');
+        S.gps_time=p[5];
+      }
       break;
-
-    case 'D1':
-      S.gps_state = 1;
-      addUART('GPS tracking started, interval: ' + parsed.interval + 's', 'uinfo');
-      break;
-
-    case 'W0':
-      addUART('⚠ ALARM received type: ' + parsed.alarm_type + ' (1=illegal-move 2=fall 3=low-power)', 'uerr');
-      await writeBLE(CMD_ALARM_ACK(S.imei));
-      break;
-
-    case 'E0':
-      addUART('⚠ FAULT received code: ' + parsed.fault_code, 'uerr');
-      await writeBLE(CMD_FAULT_ACK(S.imei));
-      break;
-
-    case 'json':
-      const d = parsed.data;
-      if (d.locked    !== undefined) S.locked   = parseInt(d.locked);
-      if (d.voltage   !== undefined) S.voltage  = d.voltage;
-      if (d.power     !== undefined) S.power    = d.power;
-      if (d.signal    !== undefined) S.signal   = d.signal;
-      if (d.charging  !== undefined) S.charging = parseInt(d.charging);
-      if (d.gps_valid !== undefined) S.gps_valid = d.gps_valid===true||d.gps_valid==='true';
-      if (d.latitude  !== undefined && d.latitude!=-1) S.latitude   = parseFloat(d.latitude);
-      if (d.longitude !== undefined && d.longitude!=-1) S.longitude = parseFloat(d.longitude);
-      if (d.altitude) S.altitude = d.altitude;
-      if (d.gps_time) S.gps_time = d.gps_time;
-      if (d.loggin_state  !== undefined) S.loggin_state  = parseInt(d.loggin_state);
-      if (d.locking_state !== undefined) S.locking_state = parseInt(d.locking_state);
-      if (d.last_cycling_time) S.last_cycling_time = d.last_cycling_time;
-      break;
+    case 'L0': S.locked=0; S.locking_state=0; addUART('ASCII L0: unlocked','uok'); break;
+    case 'L1': S.locked=1; S.locking_state=0; addUART('ASCII L1: locked','uok'); break;
+    case 'K0': addUART('BLE KEY from device: '+p[4],'uinfo'); break;
   }
 }
 
@@ -698,36 +647,156 @@ async function applyParsed(parsed) {
 // ════════════════════════════════════════════════════════════════════════════
 async function handleRX(chunk) {
   rxCount++;
-  rxBuffer += chunk;
   document.getElementById('d-rxcount').textContent = rxCount;
-  document.getElementById('d-raw').textContent = chunk.trim().slice(0,120);
-  addUART('← ' + chunk.trim(), 'urx');
 
-  // Split on # or newline — box-server uses "#\n" as message terminator
-  const messages = rxBuffer.split(/[#\n]+/);
-  rxBuffer = messages.pop() || '';
+  // Append to buffer
+  const newBuf = new Uint8Array(rxBuf.length + chunk.length);
+  newBuf.set(rxBuf); newBuf.set(chunk, rxBuf.length);
+  rxBuf = newBuf;
 
-  for (const msg of messages) {
-    const m = msg.trim();
-    if (!m) continue;
-    const parsed = parseLine(m);
-    if (parsed) await applyParsed(parsed);
-  }
+  document.getElementById('d-rawhex').textContent = toHex(chunk).slice(0,60);
 
-  // Also try JSON in buffer
-  if (rxBuffer.includes('{') && rxBuffer.includes('}')) {
-    const jm = rxBuffer.match(/\{[\s\S]+?\}/);
-    if (jm) {
-      const p = parseLine(jm[0]);
-      if (p) { await applyParsed(p); rxBuffer = rxBuffer.replace(jm[0],''); }
+  // Check if this looks like ASCII (NUS text protocol)
+  const isText = chunk.every(b => b >= 0x09 && b <= 0x7E);
+  if (isText) {
+    const text = new TextDecoder().decode(chunk);
+    if (text.includes('SCOR') || text.includes('SCOS') || text.includes('H0') || text.includes('Q0')) {
+      handleNUSAscii(text);
+      rxBuf = new Uint8Array(0);
+      renderAll(); return;
     }
   }
+
+  // Try to parse binary BLE frame(s) from buffer
+  let processed = true;
+  while (processed && rxBuf.length > 0) {
+    processed = false;
+    const frame = decryptFrame(rxBuf);
+    if (frame) {
+      processed = true;
+      await handleBLEFrame(frame);
+      // Consume the frame from buffer
+      // Find end of frame: start(0xA3A4) + 2 + 1(LEN) + 1(RAND) + (1+1+LEN) + 1(CRC)
+      let start = 0;
+      for (let i = 0; i < rxBuf.length-1; i++) {
+        if (rxBuf[i]===0xA3&&rxBuf[i+1]===0xA4) { start=i; break; }
+      }
+      const LEN = rxBuf[start+2];
+      const frameEnd = start + 4 + 1 + 1 + LEN + 1;
+      rxBuf = rxBuf.slice(Math.min(frameEnd, rxBuf.length));
+    }
+  }
+  // Clear stale buffer
+  if (rxBuf.length > 256) rxBuf = new Uint8Array(0);
 
   renderAll();
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-//  BLE
+//  BLE SEND HELPERS
+// ════════════════════════════════════════════════════════════════════════════
+async function writeBLE(bytes) {
+  if (!txChar) throw new Error('txChar is null');
+  await txChar.writeValue(bytes);
+  addUART(`→ [${Array.from(bytes).map(b=>'0x'+b.toString(16).toUpperCase().padStart(2,'0')).join(' ')}]`, 'utx');
+}
+
+async function writeBLEAscii(cmd) {
+  if (!txChar) throw new Error('txChar is null');
+  const enc = new TextEncoder().encode(cmd);
+  await txChar.writeValue(enc);
+  addUART('→ ASCII: ' + cmd.trim(), 'utx');
+}
+
+async function sendBLECmd_Raw(cmd, data) {
+  const frame = buildFrame(cmd, data, keyOnce);
+  await writeBLE(frame);
+}
+
+// ── Specific commands ─────────────────────────────────────────────────────────
+
+// Step 1: send device KEY to get KEY_once (§2.5.1)
+async function sendBLECmd_Auth() {
+  addUART('Step 1: sending device KEY (0x01) "OmniW4GX"…', 'usys');
+  setStepLabel('Authenticating with device KEY…');
+  hsPhase = 'waiting_key';
+  document.getElementById('d-hphase').textContent = 'waiting_key';
+  document.getElementById('d-hphase').className   = 'dv wa';
+  const frame = buildFrame(0x01, DEVICE_KEY, 0x00);
+  await writeBLE(frame);
+}
+
+// 0x31 Query lock status
+async function sendBLECmd_QueryStatus() {
+  addUART('Querying lock status (0x31)…', 'usys');
+  await sendBLECmd_Raw(0x31, [0x01]);
+}
+
+// 0x05 Unlock
+async function sendBLECmd_Unlock() {
+  addUART('Sending UNLOCK (0x05)…', 'usys');
+  setStepLabel('Unlocking…');
+  lockBusy = true;
+  renderControl();
+  // Data: [0x01, userID(4bytes big-endian), timestamp(4bytes big-endian), reserved(1byte)]
+  const ts = nowTs();
+  const uid = USER_ID;
+  const data = [
+    0x01,
+    (uid>>24)&0xFF,(uid>>16)&0xFF,(uid>>8)&0xFF,uid&0xFF,
+    (ts>>24)&0xFF,(ts>>16)&0xFF,(ts>>8)&0xFF,ts&0xFF,
+    0x00
+  ];
+  await sendBLECmd_Raw(0x05, data);
+}
+
+// 0x15 Lock
+async function sendBLECmd_Lock() {
+  addUART('Sending LOCK (0x15)…', 'usys');
+  setStepLabel('Locking…');
+  lockBusy = true;
+  renderControl();
+  await sendBLECmd_Raw(0x15, [0x01]);
+}
+
+// 0x61 Scooter settings: lights, mode, throttle, taillights
+async function sendBLECmd_SetLights(on) {
+  addUART(`Sending 0x61 lights ${on?'ON':'OFF'}…`, 'usys');
+  // DATA: [headlight, mode, throttle, taillight]
+  // 0=invalid(no change) 1=off 2=on
+  const val = on ? 2 : 1;
+  await sendBLECmd_Raw(0x61, [val, 0, 0, val]);
+}
+
+// 0x60 Get scooter info
+async function handleGetInfo() {
+  if (hsPhase !== 'ready') { addUART('Not authenticated yet', 'uerr'); return; }
+  await sendBLECmd_Raw(0x60, [0x01]);
+}
+
+// Beep / find scooter — uses NUS ASCII V0 command
+async function handleBeep() {
+  if (phase !== 'ready') return;
+  addUART('Sending beep (V0,2) — find scooter…', 'usys');
+  const imei = S.imei || '867584030291749';
+  // ASCII NUS: ÿÿ*SCOS,OM,IMEI,V0,2#\n
+  const cmd = `\xFF\xFF*SCOS,${VENDOR},${imei},V0,2#\n`;
+  await writeBLEAscii(cmd);
+}
+
+// Query via ASCII (H0 trigger)
+async function handleQuery() {
+  if (phase !== 'ready') return;
+  if (hsPhase === 'ready') {
+    await sendBLECmd_QueryStatus();
+  } else {
+    const imei = S.imei || '867584030291749';
+    await writeBLEAscii(`*SCOR,${VENDOR},${imei},Q0,412,80,28#\n`);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  MAIN ACTIONS
 // ════════════════════════════════════════════════════════════════════════════
 async function handleScan() {
   if (!navigator.bluetooth) {
@@ -738,22 +807,21 @@ async function handleScan() {
   document.getElementById('scan-btn').disabled = true;
   document.getElementById('scan-txt').textContent = 'Searching…';
   document.getElementById('scan-emoji').textContent = '🔍';
-  addUART('Opening BLE device picker…', 'uinfo');
+  addUART('Opening BLE device picker…', 'usys');
   renderControl();
 
   try {
     bleDevice = await navigator.bluetooth.requestDevice({
       filters: [
         { services: [NUS_SVC] },
-        { namePrefix: 'SCOR' },
-        { namePrefix: 'OM' },
-        { namePrefix: 'SCO' },
+        { namePrefix: 'SCOR' }, { namePrefix: 'OM' }, { namePrefix: 'SCO' },
+        { namePrefix: 'Omni' }, { namePrefix: 'omni' },
       ],
       optionalServices: [NUS_SVC],
     });
 
     const devName = bleDevice.name || bleDevice.id;
-    addUART('Found: ' + devName, 'uok');
+    addUART('Device: ' + devName, 'uok');
     document.getElementById('d-devname').textContent = devName;
     document.getElementById('d-devname').className   = 'dv ok';
     setPhase('connecting');
@@ -773,11 +841,8 @@ async function handleScan() {
       document.getElementById('d-nus').textContent = 'NOT FOUND ✗';
       document.getElementById('d-nus').className   = 'dv er';
       addUART('NUS not found — listing all services:', 'uerr');
-      try {
-        const all = await server.getPrimaryServices();
-        all.forEach(s => addUART('  » ' + s.uuid, 'uinfo'));
-      } catch(e2){}
-      throw new Error('NUS service not found. See Diagnostic for available UUIDs.');
+      try { const all = await server.getPrimaryServices(); all.forEach(s=>addUART('  » '+s.uuid,'uinfo')); } catch(e2){}
+      throw new Error('NUS service (6E400001) not found. See Diagnostic for UUIDs.');
     }
 
     // TX characteristic
@@ -797,8 +862,8 @@ async function handleScan() {
       const rxChar = await service.getCharacteristic(NUS_RX);
       await rxChar.startNotifications();
       rxChar.addEventListener('characteristicvaluechanged', e => {
-        const raw = new TextDecoder('utf-8').decode(e.target.value);
-        handleRX(raw);
+        const arr = new Uint8Array(e.target.value.buffer);
+        handleRX(arr);
       });
       addUART('RX notifications ✓', 'uok');
       document.getElementById('d-rx').textContent = 'Subscribed ✓';
@@ -811,107 +876,77 @@ async function handleScan() {
 
     // Extract IMEI from device name
     const nm = (bleDevice.name||'').match(/\d{10,}/);
-    if (nm) {
-      S.imei = nm[0];
-      document.getElementById('d-imei').textContent = S.imei;
-      document.getElementById('d-imei').className   = 'dv inf';
-    }
+    if (nm) { S.imei = nm[0]; document.getElementById('d-imei').textContent=S.imei; }
 
     bleDevice.addEventListener('gattserverdisconnected', () => {
       addUART('Device disconnected!', 'uerr');
-      txChar = null; bleDevice = null;
-      hsIdle();
+      txChar=null; bleDevice=null; hsPhase='idle'; keyOnce=0; lockBusy=false;
       setPhase('idle');
-      document.getElementById('scan-btn').disabled = false;
-      document.getElementById('scan-txt').textContent = 'Scan & Connect';
-      document.getElementById('scan-emoji').textContent = '📡';
+      document.getElementById('scan-btn').disabled=false;
+      document.getElementById('scan-txt').textContent='Scan & Connect';
+      document.getElementById('scan-emoji').textContent='📡';
       renderAll();
     });
 
     setPhase('ready');
-    addUART('━━ READY ━━  Waiting for box heartbeat (H0)…', 'uok');
+    addUART('━━ CONNECTED ━━', 'uok');
+    addUART('Starting KEY handshake (0x01)…', 'usys');
     renderAll();
 
-    // Trigger initial Q0 response from box
-    setTimeout(() => sendQuery(), 600);
+    // CRITICAL: must do 0x01 auth within 5 seconds or device disconnects
+    setTimeout(() => sendBLECmd_Auth(), 300);
 
   } catch(err) {
     addUART('CONNECT ERROR: ' + err.message, 'uerr');
     setPhase('error');
-    document.getElementById('scan-btn').disabled = false;
-    document.getElementById('scan-txt').textContent = 'Retry Scan';
-    document.getElementById('scan-emoji').textContent = '📡';
+    document.getElementById('scan-btn').disabled=false;
+    document.getElementById('scan-txt').textContent='Retry Scan';
+    document.getElementById('scan-emoji').textContent='📡';
     renderAll();
   }
 }
 
-async function writeBLE(cmd) {
-  if (!txChar) throw new Error('txChar null');
-  const enc = new TextEncoder().encode(cmd);
-  await txChar.writeValue(enc);
-  addUART('→ ' + cmd.replace(/\xFF/g,'ÿ').trim(), 'utx');
-}
-
-async function sendQuery() {
-  if (phase !== 'ready') return;
-  // Send Q0 to prompt box to send its state
-  // Mirroring testclient.js first message on connect
-  const cmd = `*SCOR,${VENDOR},${S.imei||'867584030291749'},Q0,412,80,28#\n`;
-  try { await writeBLE(cmd); } catch(e) { addUART('Query error: '+e.message,'uerr'); }
-}
-
-// ── 2-step lock/unlock ────────────────────────────────────────────────────────
 async function handleToggle() {
-  if (HS.phase !== 'idle' || phase !== 'ready') return;
+  if (lockBusy || phase !== 'ready') return;
   const isLocked = S.locked !== 0;
-  S.locking_state = 1;
 
-  try {
-    const ts = nowTs();
-    if (isLocked) {
-      // INIT-UNLOCK
-      addUART('Step 1/2 — INIT-UNLOCK (R0,0)…', 'usys');
-      setStepLabel('Step 1/2 — Requesting unlock…');
-      hsInitSent('unlock', ts);
-      await writeBLE(CMD_INIT_UNLOCK(S.imei||'867584030291749', ts));
-      addUART('Waiting for R0 response with operation_key…', 'uinfo');
-    } else {
-      // INIT-LOCK
-      addUART('Step 1/2 — INIT-LOCK (R0,1)…', 'usys');
-      setStepLabel('Step 1/2 — Requesting lock…');
-      hsInitSent('lock', ts);
-      await writeBLE(CMD_INIT_LOCK(S.imei||'867584030291749', ts));
-      addUART('Waiting for R0 response with operation_key…', 'uinfo');
-    }
-    renderControl();
-
-    // Timeout — if no R0 response in 8s, reset
-    setTimeout(() => {
-      if (HS.phase !== 'idle') {
-        addUART('⚠ Timeout — no R0 response from box in 8s. Check DIAGNOSTIC.', 'uerr');
-        setStepLabel('Timeout — no response from box');
-        S.locking_state = 0;
-        hsIdle();
-        renderAll();
-      }
-    }, 8000);
-
-  } catch(e) {
-    addUART('Toggle error: ' + e.message, 'uerr');
-    S.locking_state = 0;
-    hsIdle();
-    renderAll();
+  if (hsPhase !== 'ready') {
+    // Auth not done yet — queue command and do auth first
+    pendingCmd = isLocked ? sendBLECmd_Unlock : sendBLECmd_Lock;
+    document.getElementById('d-pendcmd').textContent = isLocked ? 'UNLOCK' : 'LOCK';
+    addUART('KEY not obtained yet — re-authenticating first…', 'usys');
+    setStepLabel('Re-authenticating…');
+    await sendBLECmd_Auth();
+    return;
   }
+
+  if (isLocked) {
+    await sendBLECmd_Unlock();
+  } else {
+    await sendBLECmd_Lock();
+  }
+}
+
+async function handleLight() {
+  if (phase !== 'ready') return;
+  if (hsPhase !== 'ready') {
+    pendingCmd = () => handleLight();
+    await sendBLECmd_Auth(); return;
+  }
+  lightOn = !lightOn;
+  const btn = document.getElementById('qc-light');
+  btn.classList.toggle('active-qc', lightOn);
+  btn.textContent = lightOn ? '💡 Lights ON' : '💡 Lights';
+  await sendBLECmd_SetLights(lightOn);
 }
 
 async function handleDisconnect() {
   try { bleDevice?.gatt?.disconnect(); } catch {}
-  txChar = null; bleDevice = null;
-  hsIdle();
+  txChar=null; bleDevice=null; hsPhase='idle'; keyOnce=0; lockBusy=false;
   setPhase('idle');
-  document.getElementById('scan-btn').disabled = false;
-  document.getElementById('scan-txt').textContent = 'Scan & Connect';
-  document.getElementById('scan-emoji').textContent = '📡';
+  document.getElementById('scan-btn').disabled=false;
+  document.getElementById('scan-txt').textContent='Scan & Connect';
+  document.getElementById('scan-emoji').textContent='📡';
   addUART('Disconnected.', 'uinfo');
   renderAll();
 }
@@ -929,28 +964,19 @@ function setPhase(p) {
   document.getElementById('d-phase').textContent = p;
   document.getElementById('d-phase').className   = 'dv '+(p==='ready'?'ok':p==='error'?'er':'wa');
 }
-
-function setStepLabel(txt) {
-  document.getElementById('step-label').textContent = txt;
-}
-
-function updateDiagHS() {
-  document.getElementById('d-hphase').textContent  = HS.phase;
-  document.getElementById('d-hphase').className    = 'dv '+(HS.phase==='idle'?'ok':HS.phase==='step2_sent'?'inf':'wa');
-  document.getElementById('d-opkey').textContent   = S.operation_key || '—';
-  document.getElementById('d-ts').textContent      = HS.ts || '—';
-  document.getElementById('d-pending').textContent = HS.action || '—';
-}
+function setStepLabel(txt) { document.getElementById('step-label').textContent = txt; }
 
 function renderControl() {
   const connected  = phase === 'ready';
-  const inProgress = HS.phase !== 'idle';
+  const authDone   = hsPhase === 'ready';
+  const inProgress = lockBusy;
   const isLocked   = S.locked !== 0;
   const unknown    = S.locked === -1;
 
-  document.getElementById('scan-btn').style.display   = connected ? 'none' : 'flex';
+  document.getElementById('scan-btn').style.display    = connected ? 'none' : 'flex';
   document.getElementById('action-row').style.display  = connected ? 'flex' : 'none';
   document.getElementById('hb-row').style.display      = connected ? 'flex' : 'none';
+  document.getElementById('qc-row').style.display      = connected ? 'flex' : 'none';
   document.getElementById('no-bt').style.display       = navigator.bluetooth ? 'none' : 'block';
 
   const devLbl = document.getElementById('dev-label');
@@ -959,107 +985,103 @@ function renderControl() {
     : 'No device paired';
   devLbl.style.color = connected ? 'var(--green)' : 'var(--muted)';
 
+  const keyLbl = document.getElementById('key-label');
+  keyLbl.textContent = connected
+    ? (authDone ? `KEY_once: 0x${keyOnce.toString(16).toUpperCase()} ✓` : '⏳ Authenticating…')
+    : '';
+
   const card = document.getElementById('lock-card');
   const glow = document.getElementById('hero-glow');
   const lbl  = document.getElementById('lock-status-txt');
   const btn  = document.getElementById('main-btn');
 
   if (!connected) {
-    card.className = 'st-unknown'; glow.className = 'g-unknown';
-    lbl.style.color = 'var(--muted)'; lbl.textContent = '— UNKNOWN';
-    btn.disabled = true; btn.className = 's-idle'; btn.innerHTML = 'Connect First';
-    document.getElementById('bat-sec').style.display = 'none';
+    card.className='st-unknown'; glow.className='g-unknown';
+    lbl.style.color='var(--muted)'; lbl.textContent='— UNKNOWN';
+    btn.disabled=true; btn.className='s-idle'; btn.innerHTML='Connect First';
+    document.getElementById('bat-sec').style.display='none';
     return;
   }
 
-  // Battery bar
   const pwr = parseInt(S.power)||0;
-  const vlt  = parseInt(S.voltage)||0;
   if (pwr > 0) {
-    document.getElementById('bat-sec').style.display = 'block';
+    document.getElementById('bat-sec').style.display='block';
     const bc = pwr>50?'var(--green)':pwr>20?'var(--amber)':'var(--red)';
-    document.getElementById('bat-lbl-val').textContent = pwr+'%  ·  '+(vlt/100).toFixed(2)+'V  ·  sig:'+S.signal;
+    document.getElementById('bat-lbl-val').textContent = pwr+'%  ·  '+(parseInt(S.voltage)/100).toFixed(2)+'V  ·  sig:'+S.signal;
     document.getElementById('bat-lbl-val').style.color = bc;
     document.getElementById('bat-fill').style.width = pwr+'%';
     document.getElementById('bat-fill').style.background = bc;
   }
 
-  if (inProgress) {
-    card.className = 'st-progress'; glow.className = 'g-progress';
-    lbl.style.color = 'var(--purple)';
-    lbl.textContent = HS.action==='unlock' ? '⏳ UNLOCKING…' : '⏳ LOCKING…';
-    btn.disabled = true; btn.className = 's-progress';
-    btn.innerHTML = '<span class="spinner"></span>';
+  if (!authDone) {
+    card.className='st-progress'; glow.className='g-progress';
+    lbl.style.color='var(--purple)'; lbl.textContent='⏳ AUTHENTICATING…';
+    btn.disabled=true; btn.className='s-progress'; btn.innerHTML='<span class="spinner"></span>';
     return;
   }
-
+  if (inProgress) {
+    card.className='st-progress'; glow.className='g-progress';
+    lbl.style.color='var(--purple)';
+    lbl.textContent = S.locked!==0 ? '⏳ UNLOCKING…' : '⏳ LOCKING…';
+    btn.disabled=true; btn.className='s-progress'; btn.innerHTML='<span class="spinner"></span>';
+    return;
+  }
   if (unknown) {
-    card.className = 'st-unknown'; glow.className = 'g-unknown';
-    lbl.style.color = 'var(--amber)'; lbl.textContent = '⏳ AWAITING STATUS';
-    btn.disabled = false; btn.className = 's-unlock';
-    btn.innerHTML = '🔓 Unlock Scooter';
+    card.className='st-unknown'; glow.className='g-unknown';
+    lbl.style.color='var(--amber)'; lbl.textContent='⏳ AWAITING STATUS';
+    btn.disabled=false; btn.className='s-unlock'; btn.innerHTML='🔓 Unlock Scooter';
   } else if (isLocked) {
-    card.className = 'st-locked'; glow.className = 'g-locked';
-    lbl.style.color = 'var(--red)'; lbl.textContent = '🔒 LOCKED';
-    btn.disabled = false; btn.className = 's-unlock';
-    btn.innerHTML = '🔓 &nbsp;Unlock Scooter';
+    card.className='st-locked'; glow.className='g-locked';
+    lbl.style.color='var(--red)'; lbl.textContent='🔒 LOCKED';
+    btn.disabled=false; btn.className='s-unlock'; btn.innerHTML='🔓 &nbsp;Unlock Scooter';
   } else {
-    card.className = 'st-unlocked'; glow.className = 'g-unlocked';
-    lbl.style.color = 'var(--green)'; lbl.textContent = '🔓 UNLOCKED';
-    btn.disabled = false; btn.className = 's-lock';
-    btn.innerHTML = '🔒 &nbsp;Lock Scooter';
+    card.className='st-unlocked'; glow.className='g-unlocked';
+    lbl.style.color='var(--green)'; lbl.textContent='🔓 UNLOCKED';
+    btn.disabled=false; btn.className='s-lock'; btn.innerHTML='🔒 &nbsp;Lock Scooter';
   }
 }
 
-function pill(on, labelOn, labelOff) {
-  return `<span class="fp ${on?'on':'off'}"><span class="fd"></span>${on?labelOn:labelOff}</span>`;
+function pill(on, lo, lf) {
+  return `<span class="fp ${on?'on':'off'}"><span class="fd"></span>${on?lo:lf}</span>`;
 }
 
 function renderDashboard() {
   const pwr = parseInt(S.power)||0;
-  const hasData = pwr > 0 || parseInt(S.voltage) > 0 || S.locked !== -1;
-  document.getElementById('dash-no-data').style.display  = hasData ? 'none' : 'block';
-  document.getElementById('dash-content').style.display  = hasData ? 'flex' : 'none';
+  const vlt  = parseInt(S.voltage)||0;
+  const hasData = pwr>0||vlt>0||S.locked!==-1;
+  document.getElementById('dash-no-data').style.display  = hasData?'none':'block';
+  document.getElementById('dash-content').style.display  = hasData?'flex':'none';
   if (!hasData) return;
 
-  const lc = document.getElementById('dc-lock-card');
-  const lv = document.getElementById('dc-lock');
-  if (S.locked===0) { lv.textContent='🔓 UNLOCKED';lv.style.color='var(--green)';lc.className='dash-card hl-green'; }
-  else if (S.locked===1) { lv.textContent='🔒 LOCKED';lv.style.color='var(--red)';lc.className='dash-card hl-red'; }
-  else { lv.textContent='— Unknown';lv.style.color='var(--muted)';lc.className='dash-card hl-amber'; }
-  document.getElementById('dc-lock-sub').textContent = 'locking_state: '+S.locking_state;
-
-  const lkc = document.getElementById('dc-locking-card');
-  const lkv = document.getElementById('dc-locking');
-  lkv.textContent = S.locking_state;
-  lkc.className = 'dash-card '+(S.locking_state?'hl-purple':'');
-  lkv.style.color = S.locking_state?'var(--purple)':'var(--muted)';
-
-  document.getElementById('dc-power').textContent   = pwr||'—';
-  document.getElementById('dc-volt').textContent    = S.voltage||'—';
-  document.getElementById('dc-volt-v').textContent  = S.voltage ? (parseInt(S.voltage)/100).toFixed(2)+'V' : '';
-  document.getElementById('dc-charging-lbl').textContent = 'charging: '+(S.charging==1?'⚡ Yes':S.charging==0?'No':'—');
-  document.getElementById('dc-signal').textContent  = S.signal||'—';
-  document.getElementById('dc-login').textContent   = S.loggin_state===1?'✅ In':'— Out';
-  document.getElementById('dc-login').style.color   = S.loggin_state===1?'var(--green)':'var(--muted)';
-  document.getElementById('dc-gps-state').textContent = S.gps_state;
-  document.getElementById('dc-gps-state').style.color  = S.gps_state?'var(--green)':'var(--muted)';
-
-  document.getElementById('flags-row').innerHTML =
-    pill(S.gps_valid,        'GPS OK',    'GPS INVALID')+
-    pill(S.charging==1,      'CHARGING',  'NOT CHARGING')+
-    pill(S.loggin_state===1, 'LOGGED IN', 'LOGGED OUT')+
-    pill(S.locking_state===1,'LOCKING…',  'NOT LOCKING');
-
-  if (S.gps_valid && S.latitude > 0) {
+  const lc=document.getElementById('dc-lock-card');
+  const lv=document.getElementById('dc-lock');
+  if (S.locked===0){lv.textContent='🔓 UNLOCKED';lv.style.color='var(--green)';lc.className='dash-card hl-green';}
+  else if (S.locked===1){lv.textContent='🔒 LOCKED';lv.style.color='var(--red)';lc.className='dash-card hl-red';}
+  else{lv.textContent='— Unknown';lv.style.color='var(--muted)';lc.className='dash-card hl-amber';}
+  document.getElementById('dc-lock-sub').textContent='locking_state: '+S.locking_state;
+  document.getElementById('dc-login').textContent=S.loggin_state===1?'✅ In':'— Out';
+  document.getElementById('dc-login').style.color=S.loggin_state===1?'var(--green)':'var(--muted)';
+  document.getElementById('dc-power').textContent=pwr||'—';
+  document.getElementById('dc-volt').textContent=vlt||'—';
+  document.getElementById('dc-volt-v').textContent=vlt?((vlt/100).toFixed(2))+'V':'';
+  document.getElementById('dc-charging-lbl').textContent='charging: '+(S.charging===1?'⚡ Yes':S.charging===0?'No':'—');
+  document.getElementById('dc-signal').textContent=S.signal||'—';
+  document.getElementById('dc-locking').textContent=S.locking_state;
+  document.getElementById('dc-locking').style.color=S.locking_state?'var(--purple)':'var(--muted)';
+  document.getElementById('dc-gps-state').textContent=S.gps_state;
+  document.getElementById('flags-row').innerHTML=
+    pill(S.gps_valid,'GPS OK','GPS INVALID')+
+    pill(S.charging===1,'CHARGING','NOT CHARGING')+
+    pill(S.loggin_state===1,'LOGGED IN','LOGGED OUT')+
+    pill(S.locking_state===1,'LOCKING…','NOT LOCKING');
+  if (S.gps_valid&&S.latitude>0) {
     document.getElementById('dc-gps-valid').textContent='✅ Valid';
     document.getElementById('dc-gps-valid').style.color='var(--green)';
     document.getElementById('dc-gps-coords').style.display='block';
     document.getElementById('dc-lat').textContent=S.latitude.toFixed(6);
     document.getElementById('dc-lng').textContent=S.longitude.toFixed(6);
     document.getElementById('dc-alt').textContent=S.altitude;
-    document.getElementById('dc-acc').textContent=S.gps_accuracy;
-    document.getElementById('dc-sat').textContent=S.gps_accuracy+' sats';
+    document.getElementById('dc-acc').textContent=S.gps_accuracy+'m';
     document.getElementById('dc-gtime').textContent=S.gps_time;
     document.getElementById('maps-a').href=`https://maps.google.com/?q=${S.latitude},${S.longitude}`;
   } else {
@@ -1067,7 +1089,6 @@ function renderDashboard() {
     document.getElementById('dc-gps-valid').style.color='var(--muted)';
     document.getElementById('dc-gps-coords').style.display='none';
   }
-
   document.getElementById('dc-cycling').textContent=(S.last_cycling_time&&S.last_cycling_time!=='0')?S.last_cycling_time+'s':'0';
   document.getElementById('dc-imei').textContent=S.imei||'—';
   document.getElementById('last-upd').textContent=timeStr();
@@ -1078,20 +1099,13 @@ function renderDiag() {
   document.getElementById('d-wb').textContent=navigator.bluetooth?'Supported ✓':'NOT SUPPORTED ✗';
   document.getElementById('d-wb').className='dv '+(navigator.bluetooth?'ok':'er');
   const lk=String(S.locked);
-  const lmap={'-1':'Unknown (-1)','0':'UNLOCKED (0)','1':'LOCKED (1)'};
-  const lcls={'-1':'wa','0':'ok','1':'er'};
-  document.getElementById('d-locked').textContent=lmap[lk]||lk;
-  document.getElementById('d-locked').className='dv '+(lcls[lk]||'wa');
-  document.getElementById('d-volt').textContent=S.voltage?S.voltage+'mV  ('+(parseInt(S.voltage)/100).toFixed(2)+'V)':'—';
-  document.getElementById('d-pwr').textContent=S.power?S.power+'%':'—';
+  document.getElementById('d-locked').textContent={'-1':'Unknown','0':'UNLOCKED','1':'LOCKED'}[lk]||lk;
+  document.getElementById('d-locked').className='dv '+({'-1':'wa','0':'ok','1':'er'}[lk]||'wa');
+  document.getElementById('d-volt').textContent=S.voltage>0?S.voltage+'mV':'—';
+  document.getElementById('d-pwr').textContent=S.power>0?S.power+'%':'—';
   document.getElementById('d-sig').textContent=S.signal||'—';
-  document.getElementById('d-chg').textContent=S.charging>=0?(S.charging?'Yes ⚡':'No'):'—';
-  document.getElementById('d-gps').textContent=S.gps_valid?'Valid ✓':'Invalid / No fix';
-  document.getElementById('d-gps').className='dv '+(S.gps_valid?'ok':'wa');
-  document.getElementById('d-ls').textContent=S.locking_state;
-  document.getElementById('d-login').textContent=S.loggin_state;
   document.getElementById('d-msgtype').textContent=S.last_msg_type||'—';
-  updateDiagHS();
+  document.getElementById('d-devkey').textContent='OmniW4GX [0x4F6D6E6957344758]';
 }
 
 function renderAll() { renderControl(); renderDashboard(); renderDiag(); }
@@ -1099,9 +1113,8 @@ function renderAll() { renderControl(); renderDashboard(); renderDiag(); }
 function pulseHeartbeat() {
   const dot=document.getElementById('hb-dot');
   const txt=document.getElementById('hb-txt');
-  txt.textContent='HB @ '+timeStr()+' · locked='+S.locked+' · pwr='+S.power+'% · #'+hbCount;
-  dot.classList.add('beat');
-  setTimeout(()=>dot.classList.remove('beat'),600);
+  txt.textContent='HB @ '+timeStr()+' · locked='+S.locked+' · pwr='+S.power+'% · sig='+S.signal+' · #'+hbCount;
+  dot.classList.add('beat'); setTimeout(()=>dot.classList.remove('beat'),600);
 }
 
 function addUART(msg, cls) {
@@ -1120,16 +1133,17 @@ function switchTab(name) {
   document.getElementById('panel-'+name).classList.add('active');
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// Init
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(!navigator.bluetooth){
   document.getElementById('no-bt').style.display='block';
   addUART('Web Bluetooth NOT supported — use Chrome on Android','uerr');
 }else{
   addUART('Web Bluetooth ready ✓','uok');
-  addUART('Protocol: o2.bike SCOR/SCOS — 2-step handshake','uinfo');
-  addUART('0xFF 0xFF header + #\\n terminator','uinfo');
-  addUART('Tap Scan & Connect to pair your IoT box','uinfo');
+  addUART('Protocol: Omni BLE binary (0xA3A4 frames) + CRC8','usys');
+  addUART('Device KEY: OmniW4GX = [4F 6D 6E 69 57 34 47 58]','usys');
+  addUART('Flow: Connect → 0x01 auth → 0x31 query → 0x05/0x15 lock','usys');
+  addUART('Tap Scan & Connect to start','uinfo');
 }
 renderAll();
 </script>
