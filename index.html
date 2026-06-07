@@ -3,685 +3,1135 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<meta name="theme-color" content="#09090f"/>
+<meta name="theme-color" content="#080810"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="ScooterKey"/>
 <title>ScooterKey</title>
 <link rel="manifest" href="manifest.json"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet"/>
 <style>
-  /* ── Reset & Base ───────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --bg:       #09090f;
-    --bg2:      #0d0d16;
-    --bg3:      #111120;
-    --border:   #1c1c2e;
-    --border2:  #252538;
-    --text:     #e8e8f0;
-    --muted:    #44445a;
-    --dim:      #22222e;
-    --green:    #00e5a0;
-    --green2:   #00b87f;
-    --red:      #ff4060;
-    --red2:     #cc2f4a;
-    --amber:    #ffb340;
-    --purple:   #9d8dff;
-    --font-mono: 'Space Mono', monospace;
-    --font-sans: 'Syne', sans-serif;
-  }
-  html, body {
-    height: 100%; background: var(--bg);
-    color: var(--text); font-family: var(--font-sans);
-    overflow-x: hidden; overscroll-behavior: none;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080810;--bg2:#0d0d1a;--bg3:#111122;
+  --border:#1c1c30;--border2:#252540;
+  --text:#e8e8f4;--muted:#50506a;--dim:#1a1a2e;
+  --green:#00e5a0;--green2:#009966;
+  --red:#ff3f5f;--red2:#cc2040;
+  --amber:#ffb020;--purple:#9d8dff;--blue:#4da6ff;
+  --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;overscroll-behavior:none}
+#app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding-bottom:32px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes logIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+@keyframes hbPulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.4}100%{transform:scale(1);opacity:1}}
+.spin{animation:spin .75s linear infinite}
+.fadein{animation:fadeUp .3s ease forwards}
+.hb-anim{animation:hbPulse .5s ease}
 
-  /* ── Layout ────────────────────────────────────────────────── */
-  #app {
-    max-width: 430px; margin: 0 auto;
-    min-height: 100dvh; display: flex; flex-direction: column;
-    padding-bottom: env(safe-area-inset-bottom, 24px);
-  }
+/* ── header ── */
+header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;background:var(--bg)}
+.logo{font-size:17px;font-weight:800;color:var(--green);letter-spacing:-1px}
+.logo em{color:var(--text);font-style:normal}
+#conn-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:all .3s}
+#conn-dot.on  {background:var(--green);box-shadow:0 0 10px var(--green)}
+#conn-dot.err {background:var(--red)}
+#conn-dot.busy{background:var(--amber);animation:glow 1s ease-in-out infinite}
+#conn-label{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
-  /* ── Animations ─────────────────────────────────────────────── */
-  @keyframes spin      { to { transform: rotate(360deg); } }
-  @keyframes fadeUp    { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-  @keyframes scanRing  {
-    0%   { transform: scale(.8);  opacity: .8; }
-    50%  { transform: scale(1.15); opacity: 1;  }
-    100% { transform: scale(.8);  opacity: .8; }
-  }
-  @keyframes unlockPop {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.12); }
-    70%  { transform: scale(.95); }
-    100% { transform: scale(1); }
-  }
-  @keyframes glowPulse {
-    0%,100% { opacity: .5; }
-    50%      { opacity: 1;  }
-  }
-  @keyframes logSlide  { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:none; } }
+/* ── tabs ── */
+#tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg)}
+.tab{flex:1;padding:11px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.5px;
+  color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
 
-  .spin        { animation: spin .75s linear infinite; }
-  .scan-ring   { animation: scanRing 1.6s ease-in-out infinite; }
-  .unlock-pop  { animation: unlockPop .45s cubic-bezier(.36,.07,.19,.97); }
-  .fadein      { animation: fadeUp .35s ease forwards; }
+.panel{display:none;flex:1;overflow-y:auto;padding:14px;gap:12px;flex-direction:column}
+.panel.active{display:flex}
 
-  /* ── Header ─────────────────────────────────────────────────── */
-  header {
-    padding: 18px 20px 14px;
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 10;
-    background: var(--bg);
-  }
-  .logo { font-size: 18px; font-weight: 800; color: var(--green); letter-spacing: -1px; }
-  .logo span { color: var(--text); }
+/* ── lock card ── */
+#lock-card{border-radius:20px;border:1px solid var(--border);background:var(--bg2);
+  padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden;transition:border-color .4s}
+#lock-card.st-locked   {border-color:#ff3f5f28}
+#lock-card.st-unlocked {border-color:#00e5a028}
+#lock-card.st-unknown  {border-color:#ffb02028}
+#lock-card.st-progress {border-color:#9d8dff28}
+#hero-glow{position:absolute;inset:0;pointer-events:none;transition:background .6s}
+.g-locked  {background:radial-gradient(ellipse at 50% -5%,#ff3f5f16 0%,transparent 60%)}
+.g-unlocked{background:radial-gradient(ellipse at 50% -5%,#00e5a016 0%,transparent 60%)}
+.g-unknown {background:radial-gradient(ellipse at 50% -5%,#ffb02016 0%,transparent 60%)}
+.g-progress{background:radial-gradient(ellipse at 50% -5%,#9d8dff16 0%,transparent 60%)}
+#scooter-icon{font-size:66px;line-height:1;display:block;margin-bottom:8px;
+  filter:drop-shadow(0 4px 20px #00000060);transition:filter .4s;position:relative;z-index:1}
+#lock-card.st-unlocked #scooter-icon{filter:drop-shadow(0 0 20px #00e5a040) drop-shadow(0 4px 12px #00000050)}
+#lock-status-txt{font-size:12px;font-family:var(--mono);letter-spacing:3px;font-weight:700;margin-bottom:3px}
+#dev-label{font-size:11px;color:var(--muted);margin-bottom:20px;min-height:16px}
+#step-label{font-size:10px;font-family:var(--mono);color:var(--purple);margin-bottom:14px;min-height:14px;letter-spacing:1px}
 
-  #conn-status {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 11px; color: var(--muted); font-family: var(--font-mono);
-  }
-  #conn-dot {
-    width: 8px; height: 8px; border-radius: 50%; background: var(--dim);
-    transition: background .3s, box-shadow .3s;
-  }
-  #conn-dot.on  { background: var(--green); box-shadow: 0 0 10px var(--green); }
-  #conn-dot.err { background: var(--red); }
-  #conn-dot.busy{ background: var(--amber); animation: glowPulse 1s ease-in-out infinite; }
+/* battery */
+#bat-sec{margin-bottom:18px;text-align:left;display:none}
+.bat-row2{display:flex;justify-content:space-between;margin-bottom:5px}
+.bat-lbl2{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1px}
+#bat-track{height:5px;border-radius:3px;background:var(--dim);overflow:hidden}
+#bat-fill{height:100%;border-radius:3px;transition:width .6s,background .4s}
 
-  /* ── Main scroll area ───────────────────────────────────────── */
-  main { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+/* main button */
+#main-btn{width:100%;padding:16px;border-radius:14px;border:none;font-size:15px;font-weight:700;
+  font-family:var(--sans);cursor:pointer;transition:all .25s;display:flex;align-items:center;
+  justify-content:center;gap:10px;position:relative;z-index:1}
+#main-btn:disabled{background:var(--dim)!important;color:var(--muted)!important;cursor:not-allowed}
+#main-btn.s-unlock  {background:linear-gradient(135deg,var(--green),var(--green2));color:#021a0e}
+#main-btn.s-lock    {background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+#main-btn.s-progress{background:linear-gradient(135deg,var(--purple),#6a5acd);color:#fff}
+#main-btn.s-idle    {background:var(--dim);color:var(--muted)}
+#main-btn:not(:disabled):active{transform:scale(.97)}
 
-  /* ── Lock/Unlock hero card ──────────────────────────────────── */
-  #hero-card {
-    border-radius: 24px; border: 1px solid var(--border);
-    background: var(--bg2); padding: 32px 24px 24px;
-    text-align: center; position: relative; overflow: hidden;
-    transition: border-color .4s;
-  }
-  #hero-card.unlocked { border-color: #00e5a028; }
-  #hero-card.locked   { border-color: #ff406028; }
+/* scan / action */
+#scan-btn{width:100%;padding:16px;border-radius:14px;border:1.5px dashed var(--border2);
+  background:transparent;font-size:14px;font-weight:700;font-family:var(--sans);color:var(--text);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+#scan-btn:disabled{opacity:.5;cursor:not-allowed}
+#action-row{display:none;gap:8px}
+.act{flex:1;padding:12px 4px;border-radius:12px;border:1px solid var(--border2);background:transparent;
+  font-size:11px;font-weight:700;font-family:var(--sans);color:var(--text);cursor:pointer;transition:all .2s}
+.act:hover{background:var(--bg3)}
+.act.danger{border-color:#ff3f5f30;color:var(--red)}
 
-  #hero-glow {
-    position: absolute; inset: 0; pointer-events: none;
-    transition: background .6s ease;
-  }
-  .locked-glow   { background: radial-gradient(ellipse at 50% -10%, #ff406018 0%, transparent 60%); }
-  .unlocked-glow { background: radial-gradient(ellipse at 50% -10%, #00e5a018 0%, transparent 60%); }
+/* heartbeat */
+#hb-row{display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--muted);font-family:var(--mono)}
+#hb-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:background .2s}
+#hb-dot.beat{background:var(--green);box-shadow:0 0 8px var(--green)}
 
-  /* Scooter icon */
-  #scooter-icon {
-    font-size: 72px; line-height: 1; display: block;
-    margin-bottom: 10px; position: relative; z-index: 1;
-    filter: drop-shadow(0 4px 24px #00000060);
-    transition: filter .4s;
-  }
-  #hero-card.unlocked #scooter-icon {
-    filter: drop-shadow(0 0 24px #00e5a040) drop-shadow(0 4px 16px #00000040);
-  }
+/* ── dashboard ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px}
+.dash-card.full{grid-column:1/-1}
+.dash-card.hl-green{border-color:#00e5a030;background:#00e5a006}
+.dash-card.hl-red  {border-color:#ff3f5f30;background:#ff3f5f06}
+.dash-card.hl-amber{border-color:#ffb02030;background:#ffb02006}
+.dash-card.hl-purple{border-color:#9d8dff30;background:#9d8dff06}
+.dc-label{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:8px}
+.dc-val{font-size:22px;font-weight:800;line-height:1}
+.dc-unit{font-size:11px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
+.dc-sub{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px}
+.flags-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fp{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;font-family:var(--mono);border:1px solid transparent}
+.fp.on {background:#00e5a018;color:var(--green);border-color:#00e5a030}
+.fp.off{background:#ff3f5f18;color:var(--red);border-color:#ff3f5f30}
+.fp.na {background:var(--dim);color:var(--muted);border-color:var(--border)}
+.fp.pu {background:#9d8dff18;color:var(--purple);border-color:#9d8dff30}
+.fd{width:5px;height:5px;border-radius:50%;background:currentColor}
+.gps-coords{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px;line-height:2}
+.gps-coords a{color:var(--blue);text-decoration:none}
+.no-data{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:2}
 
-  #lock-label {
-    font-size: 11px; font-family: var(--font-mono);
-    letter-spacing: 3px; font-weight: 700;
-    margin-bottom: 4px; transition: color .3s;
-  }
-  #device-label { font-size: 12px; color: var(--muted); margin-bottom: 24px; min-height: 18px; }
+/* ── diagnostic ── */
+.diag-sec{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px}
+.diag-title{font-size:9px;color:var(--muted);font-family:var(--mono);letter-spacing:1.5px;margin-bottom:10px}
+.dr{display:flex;justify-content:space-between;align-items:flex-start;
+  padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
+.dr:last-child{border-bottom:none}
+.dk{color:var(--muted);font-family:var(--mono);font-size:10px;flex-shrink:0}
+.dv{font-weight:700;font-family:var(--mono);font-size:10px;text-align:right;word-break:break-all}
+.ok{color:var(--green)}.er{color:var(--red)}.wa{color:var(--amber)}.inf{color:var(--purple)}
 
-  /* Battery */
-  #bat-section { margin-bottom: 22px; text-align: left; display: none; }
-  .bat-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .bat-key { font-size: 10px; color: var(--muted); font-family: var(--font-mono); letter-spacing: 1px; }
-  .bat-val { font-size: 10px; font-family: var(--font-mono); }
-  #bat-track { height: 5px; border-radius: 3px; background: var(--dim); overflow: hidden; }
-  #bat-fill  { height: 100%; border-radius: 3px; transition: width .6s, background .4s; }
+#uart-box{background:#040408;border:1px solid var(--border);border-radius:14px;padding:12px;max-height:260px;overflow-y:auto}
+.ul{font-family:var(--mono);font-size:10px;margin-bottom:3px;line-height:1.5;word-break:break-all;animation:logIn .15s ease}
+.utx{color:var(--amber)}.urx{color:var(--purple)}.uinfo{color:var(--muted)}.uerr{color:var(--red)}.uok{color:var(--green)}.usys{color:var(--blue)}
 
-  /* Main CTA button */
-  #main-btn {
-    width: 100%; padding: 17px; border-radius: 16px; border: none;
-    font-size: 16px; font-weight: 700; font-family: var(--font-sans);
-    cursor: pointer; transition: all .25s; position: relative; z-index: 1;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    letter-spacing: .2px;
-  }
-  #main-btn:disabled { background: var(--dim) !important; color: var(--muted) !important; cursor: not-allowed; }
-  #main-btn.unlock-style { background: linear-gradient(135deg, var(--green), var(--green2)); color: #03120a; }
-  #main-btn.lock-style   { background: linear-gradient(135deg, var(--red),   var(--red2));  color: #fff; }
-  #main-btn.idle-style   { background: var(--dim); color: var(--muted); }
-  #main-btn:not(:disabled):active { transform: scale(.97); }
-
-  /* ── Scan button ─────────────────────────────────────────────── */
-  #scan-btn {
-    width: 100%; padding: 17px; border-radius: 16px;
-    border: 1.5px dashed var(--border2); background: transparent;
-    font-size: 15px; font-weight: 700; font-family: var(--font-sans);
-    color: var(--text); cursor: pointer; display: flex;
-    align-items: center; justify-content: center; gap: 10px;
-    transition: all .2s; position: relative; overflow: hidden;
-  }
-  #scan-btn:not(:disabled):hover { border-color: var(--green); color: var(--green); }
-  #scan-btn:disabled { opacity: .5; cursor: not-allowed; }
-  .scan-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
-  .scan-ring-svg { position: absolute; }
-
-  /* ── Action row ─────────────────────────────────────────────── */
-  #action-row { display: none; gap: 10px; }
-  .act-btn {
-    flex: 1; padding: 13px 8px; border-radius: 12px;
-    border: 1px solid var(--border2); background: transparent;
-    font-size: 13px; font-weight: 600; font-family: var(--font-sans);
-    color: var(--text); cursor: pointer; transition: all .2s;
-  }
-  .act-btn:hover { background: var(--bg3); }
-  .act-btn.danger { border-color: #ff406030; color: var(--red); }
-
-  /* ── Info pills row ─────────────────────────────────────────── */
-  #info-row { display: none; gap: 8px; }
-  .info-pill {
-    flex: 1; background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 12px; padding: 10px 12px;
-  }
-  .pill-label { font-size: 9px; color: var(--muted); font-family: var(--font-mono); letter-spacing: 1px; margin-bottom: 5px; }
-  .pill-val   { font-size: 12px; font-weight: 700; }
-  .green { color: var(--green); }
-  .red   { color: var(--red); }
-  .amber { color: var(--amber); }
-
-  /* ── Protocol monitor ───────────────────────────────────────── */
-  #proto-box {
-    display: none; background: #060610;
-    border: 1px solid var(--border); border-radius: 14px; padding: 14px;
-  }
-  .proto-header { font-size: 9px; color: var(--dim); font-family: var(--font-mono); letter-spacing: 2px; margin-bottom: 10px; }
-  .proto-line { font-family: var(--font-mono); font-size: 11px; margin-bottom: 4px; line-height: 1.5; word-break: break-all; }
-  .tx-line { color: var(--amber); }
-  .rx-line { color: var(--purple); }
-
-  /* ── Log ─────────────────────────────────────────────────────── */
-  #log-box {
-    background: #040408; border: 1px solid var(--border);
-    border-radius: 14px; padding: 14px; flex: 1;
-  }
-  .log-header { font-size: 9px; color: var(--dim); font-family: var(--font-mono); letter-spacing: 2px; margin-bottom: 10px; }
-  #log-lines { max-height: 160px; overflow-y: auto; }
-  .log-entry {
-    font-family: var(--font-mono); font-size: 10px; margin-bottom: 3px;
-    line-height: 1.5; animation: logSlide .2s ease forwards;
-  }
-  .log-ts   { color: var(--dim); margin-right: 6px; }
-  .log-info { color: var(--muted); }
-  .log-ok   { color: var(--green); }
-  .log-err  { color: var(--red); }
-  .log-tx   { color: var(--amber); }
-  .log-rx   { color: var(--purple); }
-  .log-warn { color: var(--amber); }
-
-  /* ── No BT warning ──────────────────────────────────────────── */
-  #no-bt {
-    display: none; background: #1a0a0a; border: 1px solid #ff406030;
-    border-radius: 14px; padding: 16px; font-size: 13px; color: #ff8090; line-height: 1.6;
-  }
-
-  /* ── Spinner SVG ─────────────────────────────────────────────── */
-  .spinner {
-    width: 18px; height: 18px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.2);
-    border-top-color: #fff;
-    animation: spin .7s linear infinite;
-    display: inline-block;
-  }
+#no-bt{display:none;background:#1a0810;border:1px solid #ff3f5f30;border-radius:14px;
+  padding:16px;font-size:12px;color:#ff8090;line-height:1.8}
+#no-bt code{background:#2a0a14;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:10px}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+  border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <header>
-    <div class="logo">⚡ Scooter<span>Key</span></div>
-    <div id="conn-status">
-      <div id="conn-dot"></div>
-      <span id="conn-label">Not connected</span>
-    </div>
-  </header>
+<header>
+  <div class="logo">⚡ Scooter<em>Key</em></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div id="conn-dot"></div>
+    <span id="conn-label" style="font-size:11px;color:var(--muted);font-family:var(--mono)">Disconnected</span>
+  </div>
+</header>
 
-  <main>
-
-    <!-- Hero lock card -->
-    <div id="hero-card" class="locked">
-      <div id="hero-glow" class="locked-glow"></div>
-      <span id="scooter-icon">🛴</span>
-      <div id="lock-label" style="color:var(--red)">🔒 LOCKED</div>
-      <div id="device-label">No device paired</div>
-
-      <div id="bat-section">
-        <div class="bat-row">
-          <span class="bat-key">BATTERY</span>
-          <span class="bat-val" id="bat-pct-label" style="color:var(--green)">—</span>
-        </div>
-        <div id="bat-track"><div id="bat-fill" style="width:0%;background:var(--green)"></div></div>
-      </div>
-
-      <button id="main-btn" class="idle-style" disabled onclick="handleToggle()">
-        Connect First
-      </button>
-    </div>
-
-    <!-- Scan button -->
-    <button id="scan-btn" onclick="handleScan()">
-      <div class="scan-icon-wrap">
-        <span id="scan-emoji" style="font-size:18px">📡</span>
-      </div>
-      <span id="scan-txt">Scan &amp; Connect</span>
-    </button>
-
-    <!-- Action row (shown when connected) -->
-    <div id="action-row">
-      <button class="act-btn" onclick="handleRefresh()">🔄 Refresh</button>
-      <button class="act-btn" onclick="handleStatus()">📊 Status</button>
-      <button class="act-btn danger" onclick="handleDisconnect()">✕ Disc.</button>
-    </div>
-
-    <!-- Info pills (shown when connected) -->
-    <div id="info-row">
-      <div class="info-pill">
-        <div class="pill-label">VOLTAGE</div>
-        <div class="pill-val green" id="pill-volt">—</div>
-      </div>
-      <div class="info-pill">
-        <div class="pill-label">VENDOR</div>
-        <div class="pill-val" style="color:var(--purple)">OM / o2.bike</div>
-      </div>
-      <div class="info-pill">
-        <div class="pill-label">STATE</div>
-        <div class="pill-val" id="pill-state">—</div>
-      </div>
-    </div>
-
-    <!-- Protocol monitor -->
-    <div id="proto-box">
-      <div class="proto-header">UART MONITOR</div>
-      <div id="proto-tx" class="proto-line tx-line">—</div>
-      <div id="proto-rx" class="proto-line rx-line">—</div>
-    </div>
-
-    <!-- No Bluetooth warning -->
-    <div id="no-bt">
-      ⚠️ <strong>Web Bluetooth not available.</strong><br/>
-      Open this page in <strong>Chrome on Android</strong> (not Firefox, Safari, or Samsung Internet).<br/><br/>
-      In Chrome address bar, go to: <code>chrome://flags/#enable-web-bluetooth</code> and enable it.
-    </div>
-
-    <!-- Log -->
-    <div id="log-box">
-      <div class="log-header">ACTIVITY LOG</div>
-      <div id="log-lines"></div>
-    </div>
-
-  </main>
+<div id="tabs">
+  <div class="tab active" onclick="switchTab('control')">CONTROL</div>
+  <div class="tab"        onclick="switchTab('dashboard')">DASHBOARD</div>
+  <div class="tab"        onclick="switchTab('diag')">DIAGNOSTIC</div>
 </div>
 
+<!-- ══ CONTROL ══ -->
+<div id="panel-control" class="panel active">
+
+  <div id="lock-card" class="st-unknown">
+    <div id="hero-glow" class="g-unknown"></div>
+    <span id="scooter-icon">🛴</span>
+    <div id="lock-status-txt" style="color:var(--amber)">— UNKNOWN</div>
+    <div id="dev-label">No device paired</div>
+    <div id="step-label"></div>
+    <div id="bat-sec">
+      <div class="bat-row2">
+        <span class="bat-lbl2">BATTERY</span>
+        <span id="bat-lbl-val" style="font-size:10px;font-family:var(--mono)"></span>
+      </div>
+      <div id="bat-track"><div id="bat-fill"></div></div>
+    </div>
+    <button id="main-btn" class="s-idle" disabled onclick="handleToggle()">Connect First</button>
+  </div>
+
+  <div id="hb-row">
+    <div id="hb-dot"></div>
+    <span id="hb-txt">Waiting for heartbeat…</span>
+  </div>
+
+  <button id="scan-btn" onclick="handleScan()">
+    <span id="scan-emoji">📡</span>
+    <span id="scan-txt">Scan &amp; Connect</span>
+  </button>
+
+  <div id="action-row">
+    <button class="act" onclick="sendQuery()">🔄 Refresh</button>
+    <button class="act" onclick="switchTab('dashboard')">📊 Data</button>
+    <button class="act" onclick="switchTab('diag')">🔧 Diag</button>
+    <button class="act danger" onclick="handleDisconnect()">✕</button>
+  </div>
+
+  <div id="no-bt">
+    ⚠️ <strong>Web Bluetooth not supported.</strong><br/>
+    Use <strong>Chrome on Android</strong> — not Firefox, Samsung Internet, or Safari.<br/>
+    Enable flag: <code>chrome://flags/#enable-web-bluetooth</code>
+  </div>
+
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="panel-dashboard" class="panel">
+  <div id="dash-no-data" class="no-data">
+    🔌 Connect to scooter first.<br/>
+    Dashboard fills automatically<br/>when the box sends heartbeats.
+  </div>
+  <div id="dash-content" style="display:none;flex-direction:column;gap:10px">
+
+    <div class="dash-grid">
+      <div class="dash-card" id="dc-lock-card">
+        <div class="dc-label">LOCK STATE</div>
+        <div class="dc-val" id="dc-lock">—</div>
+        <div class="dc-sub" id="dc-lock-sub"></div>
+      </div>
+      <div class="dash-card" id="dc-locking-card">
+        <div class="dc-label">LOCKING STATE</div>
+        <div class="dc-val" id="dc-locking" style="font-size:16px">—</div>
+        <div class="dc-sub">0=idle  1=in-progress</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card hl-green">
+        <div class="dc-label">BATTERY</div>
+        <div class="dc-val"><span id="dc-power" style="color:var(--green)">—</span><span class="dc-unit">%</span></div>
+        <div class="dc-sub" id="dc-charging-lbl">charging: —</div>
+      </div>
+      <div class="dash-card">
+        <div class="dc-label">VOLTAGE</div>
+        <div class="dc-val"><span id="dc-volt" style="color:var(--amber)">—</span><span class="dc-unit">mV</span></div>
+        <div class="dc-sub" id="dc-volt-v"></div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dc-label">SIGNAL</div>
+        <div class="dc-val"><span id="dc-signal" style="color:var(--blue)">—</span><span class="dc-unit">dBm</span></div>
+      </div>
+      <div class="dash-card">
+        <div class="dc-label">LOGIN STATE</div>
+        <div class="dc-val" id="dc-login" style="font-size:16px">—</div>
+        <div class="dc-sub">0=out  1=in</div>
+      </div>
+    </div>
+
+    <div class="dash-card full">
+      <div class="dc-label">STATUS FLAGS</div>
+      <div class="flags-row" id="flags-row">
+        <span class="fp na"><span class="fd"></span>GPS</span>
+        <span class="fp na"><span class="fd"></span>CHARGING</span>
+        <span class="fp na"><span class="fd"></span>LOGGED IN</span>
+        <span class="fp na"><span class="fd"></span>LOCKING</span>
+      </div>
+    </div>
+
+    <div class="dash-card full">
+      <div class="dc-label">GPS LOCATION</div>
+      <div id="dc-gps-valid" style="font-size:16px;font-weight:800;color:var(--muted)">—</div>
+      <div id="dc-gps-coords" class="gps-coords" style="display:none">
+        <div>LAT <span id="dc-lat"></span> &nbsp;&nbsp; LNG <span id="dc-lng"></span></div>
+        <div>ALT <span id="dc-alt"></span> &nbsp;&nbsp; ACC <span id="dc-acc"></span>m &nbsp;&nbsp; SAT <span id="dc-sat"></span></div>
+        <div>GPS TIME <span id="dc-gtime"></span></div>
+        <div style="margin-top:6px"><a id="maps-a" href="#" target="_blank">📍 Open in Google Maps</a></div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dc-label">LAST CYCLING TIME</div>
+        <div class="dc-val" id="dc-cycling" style="font-size:16px;color:var(--purple)">—</div>
+      </div>
+      <div class="dash-card">
+        <div class="dc-label">GPS STATE</div>
+        <div class="dc-val" id="dc-gps-state" style="font-size:16px">—</div>
+        <div class="dc-sub">0=idle  1=tracking</div>
+      </div>
+    </div>
+
+    <div class="dash-card full">
+      <div class="dc-label">DEVICE IMEI</div>
+      <div id="dc-imei" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted)">—</div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)">
+      Updated: <span id="last-upd">—</span> &nbsp;·&nbsp; Heartbeats: <span id="hb-count">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DIAGNOSTIC ══ -->
+<div id="panel-diag" class="panel">
+
+  <div class="diag-sec">
+    <div class="diag-title">BLE CONNECTION</div>
+    <div class="dr"><span class="dk">Web Bluetooth</span><span class="dv" id="d-wb">checking…</span></div>
+    <div class="dr"><span class="dk">Phase</span><span class="dv" id="d-phase">idle</span></div>
+    <div class="dr"><span class="dk">Device name</span><span class="dv" id="d-devname">—</span></div>
+    <div class="dr"><span class="dk">IMEI</span><span class="dv" id="d-imei">—</span></div>
+    <div class="dr"><span class="dk">NUS service</span><span class="dv" id="d-nus">—</span></div>
+    <div class="dr"><span class="dk">TX char (write)</span><span class="dv" id="d-tx">—</span></div>
+    <div class="dr"><span class="dk">RX notifications</span><span class="dv" id="d-rx">—</span></div>
+    <div class="dr"><span class="dk">RX messages total</span><span class="dv" id="d-rxcount">0</span></div>
+  </div>
+
+  <div class="diag-sec">
+    <div class="diag-title">HANDSHAKE STATE (2-step lock/unlock)</div>
+    <div class="dr"><span class="dk">handshake_phase</span><span class="dv" id="d-hphase">idle</span></div>
+    <div class="dr"><span class="dk">operation_key</span><span class="dv inf" id="d-opkey">—</span></div>
+    <div class="dr"><span class="dk">lock_timestamp</span><span class="dv" id="d-ts">—</span></div>
+    <div class="dr"><span class="dk">pending_action</span><span class="dv" id="d-pending">—</span></div>
+  </div>
+
+  <div class="diag-sec">
+    <div class="diag-title">SCOOTER STATE (from box messages)</div>
+    <div class="dr"><span class="dk">locked</span><span class="dv" id="d-locked">—</span></div>
+    <div class="dr"><span class="dk">voltage</span><span class="dv" id="d-volt">—</span></div>
+    <div class="dr"><span class="dk">power</span><span class="dv" id="d-pwr">—</span></div>
+    <div class="dr"><span class="dk">signal</span><span class="dv" id="d-sig">—</span></div>
+    <div class="dr"><span class="dk">charging</span><span class="dv" id="d-chg">—</span></div>
+    <div class="dr"><span class="dk">gps_valid</span><span class="dv" id="d-gps">—</span></div>
+    <div class="dr"><span class="dk">locking_state</span><span class="dv" id="d-ls">—</span></div>
+    <div class="dr"><span class="dk">loggin_state</span><span class="dv" id="d-login">—</span></div>
+    <div class="dr"><span class="dk">last msg type</span><span class="dv inf" id="d-msgtype">—</span></div>
+    <div class="dr"><span class="dk">last raw RX</span><span class="dv inf" id="d-raw" style="font-size:9px">—</span></div>
+  </div>
+
+  <div class="diag-sec" style="padding-bottom:10px">
+    <div class="diag-title">UART MONITOR (live · TX=amber RX=purple)</div>
+    <div id="uart-box"></div>
+  </div>
+
+</div>
+
+</div><!-- #app -->
 <script>
-// ══════════════════════════════════════════════════════════════════════════════
-//  o2.bike BLE Protocol constants
-//  Source: reverse-engineered from mobile.o2.bike:3001/logs
-// ══════════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+//  PROTOCOL — fully reverse-engineered from box-server.js + testclient.js
+//
+//  KEY INSIGHT: lock/unlock is a 2-STEP HANDSHAKE
+//
+//  UNLOCK flow:
+//    Step 1 — App sends:  ÿÿ*SCOS,OM,IMEI,R0,0,20,1234,{ts}#\n   (INIT-UNLOCK)
+//    Step 2 — Box replies: *SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}#
+//             Box gives us operation_key in field[5]
+//    Step 3 — App sends:  ÿÿ*SCOS,OM,IMEI,L0,{op_key},1234,{ts}#\n  (actual UNLOCK)
+//    Step 4 — Box replies: *SCOR,OM,IMEI,L0,0,...#  (L0 result: 0=success)
+//             App updates locked=0, locking_state=0
+//
+//  LOCK flow:
+//    Step 1 — App sends:  ÿÿ*SCOS,OM,IMEI,R0,1,20,1234,{ts}#\n   (INIT-LOCK)
+//    Step 2 — Box replies: *SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}#
+//    Step 3 — App sends:  ÿÿ*SCOS,OM,IMEI,L1,{op_key}#\n          (actual LOCK)
+//    Step 4 — Box replies: *SCOR,OM,IMEI,L1,0,...#  (L1 result: 0=success)
+//
+//  NOTE: Commands have 0xFF 0xFF header prefix (from makeCommand: HEADER = \xFF\xFF*SCOS)
+//  NOTE: All messages end with #\n
+//
+//  Box → App messages (we RECEIVE):
+//    Q0 — initial: volt, power, signal
+//    H0 — heartbeat: locked, volt, signal, power, charging
+//    R0 — init-ack: state(1=lock/0=unlock), op_key, pin, ts
+//    L0 — unlock result: 0=success 1=fail 2=key error
+//    L1 — lock result:   0=success 1=fail 2=key error
+//    D0 — GPS data
+//    D1 — GPS tracking started
+//    W0 — alarm
+//    E0 — fault
+// ════════════════════════════════════════════════════════════════════════════
 
-// Nordic UART Service — standard BLE serial bridge used by o2.bike IoT box
-const NUS_SERVICE  = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-const NUS_TX       = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // app → device (write)
-const NUS_RX       = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // device → app (notify)
+const NUS_SVC = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const NUS_TX  = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // app writes
+const NUS_RX  = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // app reads (notify)
 
-// Vendor prefix seen in all log messages
-const VENDOR = 'OM';
+const VENDOR  = 'OM';
+const USER_ID = '1234'; // from box-server.js: const USER_ID = "1234"
 
-// PIN extracted from log: *SCOS,OM,867584030291749,R0,0,20,1234,1583052823
-// Change this if your device uses a different PIN
-const OP_PIN = '1234';
+// 0xFF 0xFF prefix — from box-server.js: String.fromCharCode(0xFF,0xFF) + '*SCOS'
+const HDR = '\xFF\xFF*SCOS';
 
-// ── Protocol builders ──────────────────────────────────────────────────────
-const ts  = () => Math.floor(Date.now() / 1000);
+function nowTs()   { return Math.floor(Date.now() / 1000); }
+function timeStr() { return new Date().toLocaleTimeString('en-GB',{hour12:false}); }
 
-// Query current status
-const cmdQuery  = (imei) => `*SCOR,${VENDOR},${imei},Q0\n`;
+// ── Commands (APP → BOX) ─────────────────────────────────────────────────────
+// All from makeCommand() in box-server.js
 
-// Unlock: R0 command (from log: "Initializing un-lock" → *SCOS,...,R0,...)
-const cmdUnlock = (imei) => `*SCOS,${VENDOR},${imei},R0,0,20,${OP_PIN},${ts()}\n`;
+// INIT-UNLOCK: R0,0 = "I want to unlock"
+function CMD_INIT_UNLOCK(imei, ts) {
+  // *SCOS,OM,IMEI,R0,0,20,1234,{ts}#\n
+  return `${HDR},${VENDOR},${imei},R0,0,20,${USER_ID},${ts}#\n`;
+}
 
-// Lock: L0 command (inverse of R0)
-const cmdLock   = (imei) => `*SCOS,${VENDOR},${imei},L0,0,20,${OP_PIN},${ts()}\n`;
+// INIT-LOCK: R0,1 = "I want to lock"
+function CMD_INIT_LOCK(imei, ts) {
+  // *SCOS,OM,IMEI,R0,1,20,1234,{ts}#\n
+  return `${HDR},${VENDOR},${imei},R0,1,20,${USER_ID},${ts}#\n`;
+}
 
-// Parse status response: *SCOR,OM,{imei},Q0,{voltage},{power}
-function parseResponse(raw) {
-  raw = raw.trim().replace(/^\*/, '');
-  const p = raw.split(',');
-  if (p[0] === 'SCOR' && p.length >= 6) {
-    return { type:'status', imei:p[2], voltage:parseInt(p[4])||0, power:parseInt(p[5])||0 };
+// UNLOCK (step 2): uses op_key received from box's R0 response
+function CMD_UNLOCK(imei, op_key, ts) {
+  // *SCOS,OM,IMEI,L0,{op_key},1234,{ts}#\n
+  return `${HDR},${VENDOR},${imei},L0,${op_key},${USER_ID},${ts}#\n`;
+}
+
+// LOCK (step 2): uses op_key
+function CMD_LOCK(imei, op_key) {
+  // *SCOS,OM,IMEI,L1,{op_key}#\n
+  return `${HDR},${VENDOR},${imei},L1,${op_key}#\n`;
+}
+
+// ACK messages (app must acknowledge certain box messages)
+function CMD_UNLOCK_CONFIRM(imei) { return `${HDR},${VENDOR},${imei},L0#\n`; }
+function CMD_LOCK_CONFIRM(imei)   { return `${HDR},${VENDOR},${imei},L1#\n`; }
+function CMD_ALARM_ACK(imei)      { return `${HDR},${VENDOR},${imei},W0#\n`; }
+function CMD_FAULT_ACK(imei)      { return `${HDR},${VENDOR},${imei},E0#\n`; }
+function CMD_START_TRACKING(imei) { return `${HDR},${VENDOR},${imei},D1,30#\n`; }
+function CMD_STOP_TRACKING(imei)  { return `${HDR},${VENDOR},${imei},D1,0#\n`; }
+
+// ── State ────────────────────────────────────────────────────────────────────
+let bleDevice = null, txChar = null;
+let phase = 'idle'; // idle|scanning|connecting|ready|error
+let rxBuffer = '';
+let rxCount = 0, hbCount = 0;
+
+// Mirrors BoxStateInit() from box-server.js
+const S = {
+  vendor_code: null,
+  imei: '',
+  locked: -1,         // 1=locked, 0=unlocked, -1=unknown
+  voltage: -1,
+  power: -1,
+  signal: -1,
+  charging: -1,
+  gps_valid: false,
+  latitude: -1,
+  longitude: -1,
+  gps_accuracy: '0',
+  altitude: '0M',
+  gps_time: '',
+  loggin_state: 0,    // 0=not logged in, 1=logged in
+  locking_state: 0,   // 0=idle, 1=in-progress
+  gps_state: 0,       // 0=idle, 1=in-progress
+  lock_timestamp: 0,
+  operation_key: null,
+  last_cycling_time: '0',
+  last_msg_type: '',
+};
+
+// Handshake state — tracks 2-step lock/unlock
+const HS = {
+  phase: 'idle',     // idle | init_sent | step2_sent
+  action: null,      // 'lock' | 'unlock'
+  ts: 0,
+};
+
+function hsIdle()    { HS.phase='idle'; HS.action=null; updateDiagHS(); }
+function hsInitSent(action, ts) { HS.phase='init_sent'; HS.action=action; HS.ts=ts; updateDiagHS(); }
+function hsStep2Sent(){ HS.phase='step2_sent'; updateDiagHS(); }
+
+// ── GPS helpers (from box-server.js: calcLatitude / calcLongitude) ────────────
+function calcLatitude(lat, hemi) {
+  const deg = parseFloat(lat.substring(0,2));
+  let min   = parseFloat(lat.substring(2)) / 60;
+  const v   = deg + min;
+  return hemi === 'N' ? v : -v;
+}
+function calcLongitude(lon, hemi) {
+  const deg = parseFloat(lon.substring(0,3));
+  let min   = parseFloat(lon.substring(3)) / 60;
+  const v   = deg + min;
+  return hemi === 'E' ? v : -v;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  PARSER — mirrors processResponse() in box-server.js
+// ════════════════════════════════════════════════════════════════════════════
+function parseLine(raw) {
+  // Strip 0xFF 0xFF header bytes and * prefix, trim whitespace and #
+  let line = raw.replace(/[\xFF\xFE]+/g,'').trim().replace(/^[\*]+/,'').replace(/#+$/,'').trim();
+  if (!line) return null;
+
+  const p    = line.split(',');
+  const type = p[0]; // SCOR or SCOS
+  const cmd  = p[3];
+
+  if (type !== 'SCOR' && type !== 'SCOS') {
+    if (line.startsWith('{')) {
+      try { return {kind:'json', data:JSON.parse(line)}; } catch(e){}
+    }
+    return {kind:'unknown', raw:line};
   }
-  if (p[0] === 'SCOS') {
-    const ok = raw.includes('OK') || raw.includes('R0') || raw.includes('L0');
-    return { type:'ack', ok };
-  }
-  return { type:'raw', raw };
-}
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  App State
-// ══════════════════════════════════════════════════════════════════════════════
-let bleDevice   = null;
-let txChar      = null;   // write characteristic
-let rxSub       = null;   // notification subscription
-let imei        = '';
-let isLocked    = true;
-let voltage     = 0;
-let power       = 0;
-let cmdBusy     = false;
-let rxBuffer    = '';
-let phase       = 'idle'; // idle | scanning | connecting | ready | error
+  const imei = p[2];
+  if (imei && imei.length >= 10) S.imei = imei;
+  if (p[1]) S.vendor_code = p[1];
 
-// ── Logging ────────────────────────────────────────────────────────────────
-function nowStr() {
-  return new Date().toLocaleTimeString('en-GB', { hour12:false });
-}
-function addLog(msg, type='info') {
-  const container = document.getElementById('log-lines');
-  const el = document.createElement('div');
-  el.className = 'log-entry';
-  el.innerHTML = `<span class="log-ts">${nowStr()}</span><span class="log-${type}">${msg}</span>`;
-  container.insertBefore(el, container.firstChild);
-  while (container.children.length > 60) container.removeChild(container.lastChild);
-}
+  switch(cmd) {
+    case 'Q0': //*SCOR,OM,IMEI,Q0,412,80,28
+      return {kind:'Q0', voltage:p[4], power:p[5], signal:p[6]};
 
-// ── UI updaters ─────────────────────────────────────────────────────────────
-function setConnStatus(p) {
-  phase = p;
-  const dot   = document.getElementById('conn-dot');
-  const label = document.getElementById('conn-label');
-  dot.className = '';
-  const map = {
-    idle:'Not connected', scanning:'Scanning…', connecting:'Connecting…',
-    ready:'Connected', error:'Error'
-  };
-  label.textContent = map[p] || p;
-  if (p==='ready')                      dot.className = 'on';
-  else if (p==='error')                 dot.className = 'err';
-  else if (p==='scanning'||p==='connecting') dot.className = 'busy';
-}
+    case 'H0': //*SCOR,OM,IMEI,H0,{locked},{volt},{signal},{power},{charging}
+      return {kind:'H0',
+        locked:   parseInt(p[4]),
+        voltage:  p[5],
+        signal:   p[6],
+        power:    p[7],
+        charging: p[8],
+      };
 
-function renderLock() {
-  const card  = document.getElementById('hero-card');
-  const glow  = document.getElementById('hero-glow');
-  const label = document.getElementById('lock-label');
-  const btn   = document.getElementById('main-btn');
-  const ps    = document.getElementById('pill-state');
+    case 'R0': //*SCOR,OM,IMEI,R0,{state},{op_key},{pin},{ts}
+      // state: 1=init-lock, 0=init-unlock (from box-server: operation=msg_parts[4]==1?"lock":"unlock")
+      return {kind:'R0',
+        state:   parseInt(p[4]), // 1=lock op, 0=unlock op
+        op_key:  p[5],           // operation_key — CRITICAL for step 2
+        pin:     p[6],
+        ts:      p[7],
+      };
 
-  const connected = phase === 'ready';
+    case 'L0': //*SCOR,OM,IMEI,L0,{result}   0=success 1=fail 2=key error
+      return {kind:'L0', result:parseInt(p[4])};
 
-  if (!connected) {
-    card.className = 'locked';
-    glow.className = 'locked-glow';
-    label.style.color = 'var(--red)';
-    label.textContent = '🔒 LOCKED';
-    btn.disabled = true;
-    btn.className = 'idle-style';
-    btn.innerHTML = 'Connect First';
-    if (ps) { ps.textContent='—'; ps.className='pill-val'; }
-    return;
-  }
+    case 'L1': //*SCOR,OM,IMEI,L1,{result},{pin},{ts},{cycling_time}
+      return {kind:'L1',
+        result:       parseInt(p[4]),
+        cycling_time: p[7],
+      };
 
-  if (isLocked) {
-    card.className = 'locked';
-    glow.className = 'locked-glow';
-    label.style.color = 'var(--red)';
-    label.textContent = '🔒 LOCKED';
-    btn.disabled = cmdBusy;
-    btn.className = 'unlock-style';
-    btn.innerHTML = cmdBusy ? '<span class="spinner"></span>' : '🔓 &nbsp;Unlock Scooter';
-    if (ps) { ps.textContent='Locked'; ps.className='pill-val red'; }
-  } else {
-    card.className = 'unlocked';
-    glow.className = 'unlocked-glow';
-    label.style.color = 'var(--green)';
-    label.textContent = '🔓 UNLOCKED';
-    btn.disabled = cmdBusy;
-    btn.className = 'lock-style';
-    btn.innerHTML = cmdBusy ? '<span class="spinner"></span>' : '🔒 &nbsp;Lock Scooter';
-    if (ps) { ps.textContent='Unlocked'; ps.className='pill-val green'; }
+    case 'D0': //*SCOR,OM,IMEI,D0,{fix},{time},{valid},{lat},{NS},{lng},{EW},{sats},{speed},{date},{alt},{M},{mode}
+      const valid = p[6] === 'A';
+      let lat = -1, lng = -1;
+      if (valid) {
+        try {
+          lat = calcLatitude(p[7], p[8]);
+          lng = calcLongitude(p[9], p[10]);
+        } catch(e) {}
+      }
+      return {kind:'D0', valid, lat, lng,
+        accuracy: p[11], alt: (p[13]||'0')+(p[14]||'M'),
+        gps_time: p[5], sats: parseInt(p[11])||0};
+
+    case 'D1': //*SCOR,OM,IMEI,D1,{interval}
+      return {kind:'D1', interval: p[4]};
+
+    case 'W0': //*SCOR,OM,IMEI,W0,{alarm_type}
+      return {kind:'W0', alarm_type: p[4]};
+
+    case 'E0': //*SCOR,OM,IMEI,E0,{fault_code}
+      return {kind:'E0', fault_code: p[4]};
+
+    default:
+      return {kind:'unknown', raw:line};
   }
 }
 
-function renderBattery() {
-  const section = document.getElementById('bat-section');
-  const pillVolt = document.getElementById('pill-volt');
-  if (phase !== 'ready' || power === 0) { section.style.display='none'; return; }
+// ════════════════════════════════════════════════════════════════════════════
+//  APPLY PARSED + HANDSHAKE STATE MACHINE
+// ════════════════════════════════════════════════════════════════════════════
+async function applyParsed(parsed) {
+  if (!parsed) return;
+  S.last_msg_type = parsed.kind;
 
-  section.style.display = 'block';
-  const color = power > 50 ? 'var(--green)' : power > 20 ? 'var(--amber)' : 'var(--red)';
-  document.getElementById('bat-pct-label').textContent = power + '%  ·  ' + (voltage/100).toFixed(2)+'V';
-  document.getElementById('bat-pct-label').style.color = color;
-  document.getElementById('bat-fill').style.width = power + '%';
-  document.getElementById('bat-fill').style.background = color;
-  if (pillVolt) {
-    pillVolt.textContent = (voltage/100).toFixed(2) + 'V';
-    pillVolt.style.color = color;
+  switch(parsed.kind) {
+    case 'Q0':
+      S.voltage = parsed.voltage;
+      S.power   = parsed.power;
+      S.signal  = parsed.signal;
+      break;
+
+    case 'H0':
+      S.locked   = parsed.locked;
+      S.voltage  = parsed.voltage;
+      S.signal   = parsed.signal;
+      S.power    = parsed.power;
+      S.charging = parsed.charging;
+      hbCount++;
+      pulseHeartbeat();
+      break;
+
+    case 'R0':
+      // Box acknowledged INIT — now send step 2
+      S.operation_key = parsed.op_key;
+      addUART(`R0 received: state=${parsed.state} op_key=${parsed.op_key}`, 'uinfo');
+
+      if (HS.phase === 'init_sent') {
+        if (HS.action === 'unlock') {
+          // Send actual unlock: L0
+          addUART('Step 2: sending UNLOCK (L0)…', 'usys');
+          setStepLabel('Step 2/2 — Sending unlock…');
+          const cmd = CMD_UNLOCK(S.imei, parsed.op_key, HS.ts);
+          hsStep2Sent();
+          await writeBLE(cmd);
+        } else if (HS.action === 'lock') {
+          // Send actual lock: L1
+          addUART('Step 2: sending LOCK (L1)…', 'usys');
+          setStepLabel('Step 2/2 — Sending lock…');
+          const cmd = CMD_LOCK(S.imei, parsed.op_key);
+          hsStep2Sent();
+          await writeBLE(cmd);
+        }
+      } else {
+        addUART('R0 received but no pending handshake — ignoring', 'uerr');
+      }
+      break;
+
+    case 'L0':
+      // Unlock result
+      if (parsed.result === 0) {
+        S.locked        = 0;
+        S.locking_state = 0;
+        addUART('✅ UNLOCK SUCCESS — scooter unlocked', 'uok');
+        setStepLabel('');
+        // Send confirm ack
+        await writeBLE(CMD_UNLOCK_CONFIRM(S.imei));
+      } else {
+        addUART(`❌ UNLOCK FAILED — result code: ${parsed.result} (1=fail 2=key error)`, 'uerr');
+        setStepLabel(`Unlock failed (code ${parsed.result})`);
+        S.locking_state = 0;
+      }
+      hsIdle();
+      break;
+
+    case 'L1':
+      // Lock result
+      if (parsed.result === 0) {
+        S.locked        = 1;
+        S.locking_state = 0;
+        if (parsed.cycling_time) S.last_cycling_time = parsed.cycling_time;
+        addUART('✅ LOCK SUCCESS — scooter locked', 'uok');
+        setStepLabel('');
+        // Send confirm ack
+        await writeBLE(CMD_LOCK_CONFIRM(S.imei));
+      } else {
+        addUART(`❌ LOCK FAILED — result code: ${parsed.result}`, 'uerr');
+        setStepLabel(`Lock failed (code ${parsed.result})`);
+        S.locking_state = 0;
+      }
+      hsIdle();
+      break;
+
+    case 'D0':
+      S.gps_valid  = parsed.valid;
+      S.latitude   = parsed.lat;
+      S.longitude  = parsed.lng;
+      S.gps_accuracy = parsed.accuracy;
+      S.altitude   = parsed.alt;
+      S.gps_time   = parsed.gps_time;
+      break;
+
+    case 'D1':
+      S.gps_state = 1;
+      addUART('GPS tracking started, interval: ' + parsed.interval + 's', 'uinfo');
+      break;
+
+    case 'W0':
+      addUART('⚠ ALARM received type: ' + parsed.alarm_type + ' (1=illegal-move 2=fall 3=low-power)', 'uerr');
+      await writeBLE(CMD_ALARM_ACK(S.imei));
+      break;
+
+    case 'E0':
+      addUART('⚠ FAULT received code: ' + parsed.fault_code, 'uerr');
+      await writeBLE(CMD_FAULT_ACK(S.imei));
+      break;
+
+    case 'json':
+      const d = parsed.data;
+      if (d.locked    !== undefined) S.locked   = parseInt(d.locked);
+      if (d.voltage   !== undefined) S.voltage  = d.voltage;
+      if (d.power     !== undefined) S.power    = d.power;
+      if (d.signal    !== undefined) S.signal   = d.signal;
+      if (d.charging  !== undefined) S.charging = parseInt(d.charging);
+      if (d.gps_valid !== undefined) S.gps_valid = d.gps_valid===true||d.gps_valid==='true';
+      if (d.latitude  !== undefined && d.latitude!=-1) S.latitude   = parseFloat(d.latitude);
+      if (d.longitude !== undefined && d.longitude!=-1) S.longitude = parseFloat(d.longitude);
+      if (d.altitude) S.altitude = d.altitude;
+      if (d.gps_time) S.gps_time = d.gps_time;
+      if (d.loggin_state  !== undefined) S.loggin_state  = parseInt(d.loggin_state);
+      if (d.locking_state !== undefined) S.locking_state = parseInt(d.locking_state);
+      if (d.last_cycling_time) S.last_cycling_time = d.last_cycling_time;
+      break;
   }
 }
 
-function renderConnected() {
-  const connected = phase === 'ready';
-  document.getElementById('scan-btn').style.display    = connected ? 'none' : 'flex';
-  document.getElementById('action-row').style.display  = connected ? 'flex'  : 'none';
-  document.getElementById('info-row').style.display    = connected ? 'flex'  : 'none';
-  document.getElementById('proto-box').style.display   = connected ? 'block' : 'none';
+// ════════════════════════════════════════════════════════════════════════════
+//  RX HANDLER
+// ════════════════════════════════════════════════════════════════════════════
+async function handleRX(chunk) {
+  rxCount++;
+  rxBuffer += chunk;
+  document.getElementById('d-rxcount').textContent = rxCount;
+  document.getElementById('d-raw').textContent = chunk.trim().slice(0,120);
+  addUART('← ' + chunk.trim(), 'urx');
 
-  const devLabel = document.getElementById('device-label');
-  if (connected) {
-    devLabel.textContent = (bleDevice?.name || 'IoT Box') + (imei ? ' · …'+imei.slice(-6) : '');
-    devLabel.style.color = 'var(--green)';
-    devLabel.style.opacity = '.5';
-  } else {
-    devLabel.textContent = 'No device paired';
-    devLabel.style.color = 'var(--muted)';
-    devLabel.style.opacity = '1';
+  // Split on # or newline — box-server uses "#\n" as message terminator
+  const messages = rxBuffer.split(/[#\n]+/);
+  rxBuffer = messages.pop() || '';
+
+  for (const msg of messages) {
+    const m = msg.trim();
+    if (!m) continue;
+    const parsed = parseLine(m);
+    if (parsed) await applyParsed(parsed);
   }
-}
 
-function setProto(tx, rx) {
-  if (tx) document.getElementById('proto-tx').textContent = '→ ' + tx.trim();
-  if (rx) document.getElementById('proto-rx').textContent = '← ' + rx.trim();
-}
-
-function render() { renderLock(); renderBattery(); renderConnected(); }
-
-// ── BLE Write ──────────────────────────────────────────────────────────────
-async function writeBLE(cmd) {
-  if (!txChar) throw new Error('Not connected');
-  const data = new TextEncoder().encode(cmd);
-  await txChar.writeValue(data);
-  addLog('TX: ' + cmd.trim(), 'tx');
-  setProto(cmd, null);
-}
-
-// ── Handle incoming RX data ────────────────────────────────────────────────
-function handleRX(raw) {
-  rxBuffer += raw;
-  addLog('RX: ' + raw.trim(), 'rx');
-  setProto(null, raw);
-
-  // process complete lines
-  const lines = rxBuffer.split(/[\r\n#]+/);
-  rxBuffer = lines.pop() || '';
-
-  for (const line of lines) {
-    const l = line.trim();
-    if (!l) continue;
-    const parsed = parseResponse(l);
-
-    if (parsed.type === 'status') {
-      voltage = parsed.voltage;
-      power   = parsed.power;
-      addLog(`Status: ${power}% battery, ${(voltage/100).toFixed(2)}V`, 'ok');
-      renderBattery();
-
-    } else if (parsed.type === 'ack') {
-      // The device echoes back the command — derive lock state from it
-      if (l.includes('R0')) { isLocked = false; addLog('Unlocked ✓', 'ok'); }
-      if (l.includes('L0')) { isLocked = true;  addLog('Locked ✓',  'ok'); }
-      cmdBusy = false;
-      renderLock();
+  // Also try JSON in buffer
+  if (rxBuffer.includes('{') && rxBuffer.includes('}')) {
+    const jm = rxBuffer.match(/\{[\s\S]+?\}/);
+    if (jm) {
+      const p = parseLine(jm[0]);
+      if (p) { await applyParsed(p); rxBuffer = rxBuffer.replace(jm[0],''); }
     }
   }
+
+  renderAll();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  BLE Actions
-// ══════════════════════════════════════════════════════════════════════════════
-
+// ════════════════════════════════════════════════════════════════════════════
+//  BLE
+// ════════════════════════════════════════════════════════════════════════════
 async function handleScan() {
   if (!navigator.bluetooth) {
     document.getElementById('no-bt').style.display = 'block';
     return;
   }
-
-  setConnStatus('scanning');
+  setPhase('scanning');
   document.getElementById('scan-btn').disabled = true;
   document.getElementById('scan-txt').textContent = 'Searching…';
   document.getElementById('scan-emoji').textContent = '🔍';
-  addLog('Requesting BLE device…');
-  render();
+  addUART('Opening BLE device picker…', 'uinfo');
+  renderControl();
 
   try {
-    // Request device — shows native Android BLE picker
-    // Filters to Nordic UART service so only compatible devices appear
     bleDevice = await navigator.bluetooth.requestDevice({
       filters: [
-        { services: [NUS_SERVICE] },
+        { services: [NUS_SVC] },
         { namePrefix: 'SCOR' },
-        { namePrefix: 'OM-'  },
+        { namePrefix: 'OM' },
+        { namePrefix: 'SCO' },
       ],
-      optionalServices: [NUS_SERVICE],
+      optionalServices: [NUS_SVC],
     });
 
-    addLog('Found: ' + (bleDevice.name || bleDevice.id), 'ok');
-    setConnStatus('connecting');
-    render();
+    const devName = bleDevice.name || bleDevice.id;
+    addUART('Found: ' + devName, 'uok');
+    document.getElementById('d-devname').textContent = devName;
+    document.getElementById('d-devname').className   = 'dv ok';
+    setPhase('connecting');
+    renderControl();
 
-    // Connect GATT
-    const server  = await bleDevice.gatt.connect();
-    addLog('GATT connected', 'ok');
+    const server = await bleDevice.gatt.connect();
+    addUART('GATT connected ✓', 'uok');
 
-    const service = await server.getPrimaryService(NUS_SERVICE);
-    addLog('NUS service discovered', 'ok');
+    // NUS service
+    let service;
+    try {
+      service = await server.getPrimaryService(NUS_SVC);
+      addUART('NUS service ✓', 'uok');
+      document.getElementById('d-nus').textContent = 'Found ✓';
+      document.getElementById('d-nus').className   = 'dv ok';
+    } catch(e) {
+      document.getElementById('d-nus').textContent = 'NOT FOUND ✗';
+      document.getElementById('d-nus').className   = 'dv er';
+      addUART('NUS not found — listing all services:', 'uerr');
+      try {
+        const all = await server.getPrimaryServices();
+        all.forEach(s => addUART('  » ' + s.uuid, 'uinfo'));
+      } catch(e2){}
+      throw new Error('NUS service not found. See Diagnostic for available UUIDs.');
+    }
 
-    txChar        = await service.getCharacteristic(NUS_TX);
-    const rxChar  = await service.getCharacteristic(NUS_RX);
+    // TX characteristic
+    try {
+      txChar = await service.getCharacteristic(NUS_TX);
+      addUART('TX char ✓', 'uok');
+      document.getElementById('d-tx').textContent = 'Ready ✓';
+      document.getElementById('d-tx').className   = 'dv ok';
+    } catch(e) {
+      document.getElementById('d-tx').textContent = 'FAILED ✗';
+      document.getElementById('d-tx').className   = 'dv er';
+      throw new Error('TX characteristic not found');
+    }
 
-    // Subscribe to notifications (device → app)
-    await rxChar.startNotifications();
-    rxChar.addEventListener('characteristicvaluechanged', (e) => {
-      const raw = new TextDecoder().decode(e.target.value);
-      handleRX(raw);
-    });
-    addLog('Subscribed to RX notifications', 'ok');
+    // RX characteristic + notifications
+    try {
+      const rxChar = await service.getCharacteristic(NUS_RX);
+      await rxChar.startNotifications();
+      rxChar.addEventListener('characteristicvaluechanged', e => {
+        const raw = new TextDecoder('utf-8').decode(e.target.value);
+        handleRX(raw);
+      });
+      addUART('RX notifications ✓', 'uok');
+      document.getElementById('d-rx').textContent = 'Subscribed ✓';
+      document.getElementById('d-rx').className   = 'dv ok';
+    } catch(e) {
+      document.getElementById('d-rx').textContent = 'FAILED ✗';
+      document.getElementById('d-rx').className   = 'dv er';
+      throw new Error('RX characteristic not found');
+    }
 
-    // Try to extract IMEI from device name (e.g. "SCOR-867584030291749")
-    const nameMatch = (bleDevice.name || '').match(/\d{10,}/);
-    imei = nameMatch ? nameMatch[0] : '867584030291749'; // fallback to your device IMEI
-    addLog('IMEI: ' + imei, 'ok');
+    // Extract IMEI from device name
+    const nm = (bleDevice.name||'').match(/\d{10,}/);
+    if (nm) {
+      S.imei = nm[0];
+      document.getElementById('d-imei').textContent = S.imei;
+      document.getElementById('d-imei').className   = 'dv inf';
+    }
 
-    // Handle surprise disconnect
     bleDevice.addEventListener('gattserverdisconnected', () => {
-      addLog('Device disconnected', 'err');
+      addUART('Device disconnected!', 'uerr');
       txChar = null; bleDevice = null;
-      setConnStatus('idle');
-      render();
+      hsIdle();
+      setPhase('idle');
+      document.getElementById('scan-btn').disabled = false;
+      document.getElementById('scan-txt').textContent = 'Scan & Connect';
+      document.getElementById('scan-emoji').textContent = '📡';
+      renderAll();
     });
 
-    setConnStatus('ready');
-    addLog('Connected! Querying status…', 'ok');
-    render();
+    setPhase('ready');
+    addUART('━━ READY ━━  Waiting for box heartbeat (H0)…', 'uok');
+    renderAll();
 
-    // Auto-query status on connect
-    setTimeout(() => handleStatus(), 400);
+    // Trigger initial Q0 response from box
+    setTimeout(() => sendQuery(), 600);
 
-  } catch (err) {
-    addLog('Error: ' + err.message, 'err');
-    setConnStatus('error');
+  } catch(err) {
+    addUART('CONNECT ERROR: ' + err.message, 'uerr');
+    setPhase('error');
     document.getElementById('scan-btn').disabled = false;
     document.getElementById('scan-txt').textContent = 'Retry Scan';
     document.getElementById('scan-emoji').textContent = '📡';
-    render();
+    renderAll();
   }
 }
 
-async function handleToggle() {
-  if (cmdBusy || phase !== 'ready') return;
-  cmdBusy = true;
-  renderLock();
-  try {
-    const cmd = isLocked ? cmdUnlock(imei) : cmdLock(imei);
-    await writeBLE(cmd);
-    addLog((isLocked ? 'Unlock' : 'Lock') + ' command sent', 'info');
-    // State will update when we receive the ACK from device
-    // Safety fallback: if no ACK in 2s, assume success
-    setTimeout(() => {
-      if (cmdBusy) {
-        isLocked  = !isLocked;
-        cmdBusy   = false;
-        renderLock();
-        addLog((isLocked?'Locked':'Unlocked') + ' (assumed — no ACK)', 'warn');
-      }
-    }, 2000);
-  } catch (e) {
-    addLog('Command failed: ' + e.message, 'err');
-    cmdBusy = false;
-    renderLock();
-  }
+async function writeBLE(cmd) {
+  if (!txChar) throw new Error('txChar null');
+  const enc = new TextEncoder().encode(cmd);
+  await txChar.writeValue(enc);
+  addUART('→ ' + cmd.replace(/\xFF/g,'ÿ').trim(), 'utx');
 }
 
-async function handleStatus() {
+async function sendQuery() {
   if (phase !== 'ready') return;
-  try {
-    await writeBLE(cmdQuery(imei));
-  } catch (e) {
-    addLog('Status query failed: ' + e.message, 'err');
-  }
+  // Send Q0 to prompt box to send its state
+  // Mirroring testclient.js first message on connect
+  const cmd = `*SCOR,${VENDOR},${S.imei||'867584030291749'},Q0,412,80,28#\n`;
+  try { await writeBLE(cmd); } catch(e) { addUART('Query error: '+e.message,'uerr'); }
 }
 
-async function handleRefresh() {
-  await handleStatus();
+// ── 2-step lock/unlock ────────────────────────────────────────────────────────
+async function handleToggle() {
+  if (HS.phase !== 'idle' || phase !== 'ready') return;
+  const isLocked = S.locked !== 0;
+  S.locking_state = 1;
+
+  try {
+    const ts = nowTs();
+    if (isLocked) {
+      // INIT-UNLOCK
+      addUART('Step 1/2 — INIT-UNLOCK (R0,0)…', 'usys');
+      setStepLabel('Step 1/2 — Requesting unlock…');
+      hsInitSent('unlock', ts);
+      await writeBLE(CMD_INIT_UNLOCK(S.imei||'867584030291749', ts));
+      addUART('Waiting for R0 response with operation_key…', 'uinfo');
+    } else {
+      // INIT-LOCK
+      addUART('Step 1/2 — INIT-LOCK (R0,1)…', 'usys');
+      setStepLabel('Step 1/2 — Requesting lock…');
+      hsInitSent('lock', ts);
+      await writeBLE(CMD_INIT_LOCK(S.imei||'867584030291749', ts));
+      addUART('Waiting for R0 response with operation_key…', 'uinfo');
+    }
+    renderControl();
+
+    // Timeout — if no R0 response in 8s, reset
+    setTimeout(() => {
+      if (HS.phase !== 'idle') {
+        addUART('⚠ Timeout — no R0 response from box in 8s. Check DIAGNOSTIC.', 'uerr');
+        setStepLabel('Timeout — no response from box');
+        S.locking_state = 0;
+        hsIdle();
+        renderAll();
+      }
+    }, 8000);
+
+  } catch(e) {
+    addUART('Toggle error: ' + e.message, 'uerr');
+    S.locking_state = 0;
+    hsIdle();
+    renderAll();
+  }
 }
 
 async function handleDisconnect() {
   try { bleDevice?.gatt?.disconnect(); } catch {}
-  txChar = null; bleDevice = null; imei = '';
-  power = 0; voltage = 0; isLocked = true;
-  setConnStatus('idle');
-  addLog('Disconnected');
+  txChar = null; bleDevice = null;
+  hsIdle();
+  setPhase('idle');
   document.getElementById('scan-btn').disabled = false;
   document.getElementById('scan-txt').textContent = 'Scan & Connect';
   document.getElementById('scan-emoji').textContent = '📡';
-  render();
+  addUART('Disconnected.', 'uinfo');
+  renderAll();
 }
 
-// ── Init ────────────────────────────────────────────────────────────────────
-if (!navigator.bluetooth) {
-  document.getElementById('no-bt').style.display = 'block';
-  addLog('Web Bluetooth not supported in this browser', 'err');
-} else {
-  addLog('Web Bluetooth available ✓', 'ok');
-  addLog('Open on Android Chrome and tap Scan', 'info');
+// ════════════════════════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════════════════════════
+function setPhase(p) {
+  phase = p;
+  const dot = document.getElementById('conn-dot');
+  const lbl = document.getElementById('conn-label');
+  const map = {idle:'Disconnected',scanning:'Scanning…',connecting:'Connecting…',ready:'Connected',error:'Error'};
+  lbl.textContent = map[p]||p;
+  dot.className = p==='ready'?'on':p==='error'?'err':(p==='scanning'||p==='connecting')?'busy':'';
+  document.getElementById('d-phase').textContent = p;
+  document.getElementById('d-phase').className   = 'dv '+(p==='ready'?'ok':p==='error'?'er':'wa');
 }
-render();
-</script>
 
-<!-- PWA Service Worker registration -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+function setStepLabel(txt) {
+  document.getElementById('step-label').textContent = txt;
 }
+
+function updateDiagHS() {
+  document.getElementById('d-hphase').textContent  = HS.phase;
+  document.getElementById('d-hphase').className    = 'dv '+(HS.phase==='idle'?'ok':HS.phase==='step2_sent'?'inf':'wa');
+  document.getElementById('d-opkey').textContent   = S.operation_key || '—';
+  document.getElementById('d-ts').textContent      = HS.ts || '—';
+  document.getElementById('d-pending').textContent = HS.action || '—';
+}
+
+function renderControl() {
+  const connected  = phase === 'ready';
+  const inProgress = HS.phase !== 'idle';
+  const isLocked   = S.locked !== 0;
+  const unknown    = S.locked === -1;
+
+  document.getElementById('scan-btn').style.display   = connected ? 'none' : 'flex';
+  document.getElementById('action-row').style.display  = connected ? 'flex' : 'none';
+  document.getElementById('hb-row').style.display      = connected ? 'flex' : 'none';
+  document.getElementById('no-bt').style.display       = navigator.bluetooth ? 'none' : 'block';
+
+  const devLbl = document.getElementById('dev-label');
+  devLbl.textContent = connected
+    ? (bleDevice?.name||'IoT Box') + (S.imei ? '  ·  …'+S.imei.slice(-6) : '')
+    : 'No device paired';
+  devLbl.style.color = connected ? 'var(--green)' : 'var(--muted)';
+
+  const card = document.getElementById('lock-card');
+  const glow = document.getElementById('hero-glow');
+  const lbl  = document.getElementById('lock-status-txt');
+  const btn  = document.getElementById('main-btn');
+
+  if (!connected) {
+    card.className = 'st-unknown'; glow.className = 'g-unknown';
+    lbl.style.color = 'var(--muted)'; lbl.textContent = '— UNKNOWN';
+    btn.disabled = true; btn.className = 's-idle'; btn.innerHTML = 'Connect First';
+    document.getElementById('bat-sec').style.display = 'none';
+    return;
+  }
+
+  // Battery bar
+  const pwr = parseInt(S.power)||0;
+  const vlt  = parseInt(S.voltage)||0;
+  if (pwr > 0) {
+    document.getElementById('bat-sec').style.display = 'block';
+    const bc = pwr>50?'var(--green)':pwr>20?'var(--amber)':'var(--red)';
+    document.getElementById('bat-lbl-val').textContent = pwr+'%  ·  '+(vlt/100).toFixed(2)+'V  ·  sig:'+S.signal;
+    document.getElementById('bat-lbl-val').style.color = bc;
+    document.getElementById('bat-fill').style.width = pwr+'%';
+    document.getElementById('bat-fill').style.background = bc;
+  }
+
+  if (inProgress) {
+    card.className = 'st-progress'; glow.className = 'g-progress';
+    lbl.style.color = 'var(--purple)';
+    lbl.textContent = HS.action==='unlock' ? '⏳ UNLOCKING…' : '⏳ LOCKING…';
+    btn.disabled = true; btn.className = 's-progress';
+    btn.innerHTML = '<span class="spinner"></span>';
+    return;
+  }
+
+  if (unknown) {
+    card.className = 'st-unknown'; glow.className = 'g-unknown';
+    lbl.style.color = 'var(--amber)'; lbl.textContent = '⏳ AWAITING STATUS';
+    btn.disabled = false; btn.className = 's-unlock';
+    btn.innerHTML = '🔓 Unlock Scooter';
+  } else if (isLocked) {
+    card.className = 'st-locked'; glow.className = 'g-locked';
+    lbl.style.color = 'var(--red)'; lbl.textContent = '🔒 LOCKED';
+    btn.disabled = false; btn.className = 's-unlock';
+    btn.innerHTML = '🔓 &nbsp;Unlock Scooter';
+  } else {
+    card.className = 'st-unlocked'; glow.className = 'g-unlocked';
+    lbl.style.color = 'var(--green)'; lbl.textContent = '🔓 UNLOCKED';
+    btn.disabled = false; btn.className = 's-lock';
+    btn.innerHTML = '🔒 &nbsp;Lock Scooter';
+  }
+}
+
+function pill(on, labelOn, labelOff) {
+  return `<span class="fp ${on?'on':'off'}"><span class="fd"></span>${on?labelOn:labelOff}</span>`;
+}
+
+function renderDashboard() {
+  const pwr = parseInt(S.power)||0;
+  const hasData = pwr > 0 || parseInt(S.voltage) > 0 || S.locked !== -1;
+  document.getElementById('dash-no-data').style.display  = hasData ? 'none' : 'block';
+  document.getElementById('dash-content').style.display  = hasData ? 'flex' : 'none';
+  if (!hasData) return;
+
+  const lc = document.getElementById('dc-lock-card');
+  const lv = document.getElementById('dc-lock');
+  if (S.locked===0) { lv.textContent='🔓 UNLOCKED';lv.style.color='var(--green)';lc.className='dash-card hl-green'; }
+  else if (S.locked===1) { lv.textContent='🔒 LOCKED';lv.style.color='var(--red)';lc.className='dash-card hl-red'; }
+  else { lv.textContent='— Unknown';lv.style.color='var(--muted)';lc.className='dash-card hl-amber'; }
+  document.getElementById('dc-lock-sub').textContent = 'locking_state: '+S.locking_state;
+
+  const lkc = document.getElementById('dc-locking-card');
+  const lkv = document.getElementById('dc-locking');
+  lkv.textContent = S.locking_state;
+  lkc.className = 'dash-card '+(S.locking_state?'hl-purple':'');
+  lkv.style.color = S.locking_state?'var(--purple)':'var(--muted)';
+
+  document.getElementById('dc-power').textContent   = pwr||'—';
+  document.getElementById('dc-volt').textContent    = S.voltage||'—';
+  document.getElementById('dc-volt-v').textContent  = S.voltage ? (parseInt(S.voltage)/100).toFixed(2)+'V' : '';
+  document.getElementById('dc-charging-lbl').textContent = 'charging: '+(S.charging==1?'⚡ Yes':S.charging==0?'No':'—');
+  document.getElementById('dc-signal').textContent  = S.signal||'—';
+  document.getElementById('dc-login').textContent   = S.loggin_state===1?'✅ In':'— Out';
+  document.getElementById('dc-login').style.color   = S.loggin_state===1?'var(--green)':'var(--muted)';
+  document.getElementById('dc-gps-state').textContent = S.gps_state;
+  document.getElementById('dc-gps-state').style.color  = S.gps_state?'var(--green)':'var(--muted)';
+
+  document.getElementById('flags-row').innerHTML =
+    pill(S.gps_valid,        'GPS OK',    'GPS INVALID')+
+    pill(S.charging==1,      'CHARGING',  'NOT CHARGING')+
+    pill(S.loggin_state===1, 'LOGGED IN', 'LOGGED OUT')+
+    pill(S.locking_state===1,'LOCKING…',  'NOT LOCKING');
+
+  if (S.gps_valid && S.latitude > 0) {
+    document.getElementById('dc-gps-valid').textContent='✅ Valid';
+    document.getElementById('dc-gps-valid').style.color='var(--green)';
+    document.getElementById('dc-gps-coords').style.display='block';
+    document.getElementById('dc-lat').textContent=S.latitude.toFixed(6);
+    document.getElementById('dc-lng').textContent=S.longitude.toFixed(6);
+    document.getElementById('dc-alt').textContent=S.altitude;
+    document.getElementById('dc-acc').textContent=S.gps_accuracy;
+    document.getElementById('dc-sat').textContent=S.gps_accuracy+' sats';
+    document.getElementById('dc-gtime').textContent=S.gps_time;
+    document.getElementById('maps-a').href=`https://maps.google.com/?q=${S.latitude},${S.longitude}`;
+  } else {
+    document.getElementById('dc-gps-valid').textContent='❌ No GPS fix';
+    document.getElementById('dc-gps-valid').style.color='var(--muted)';
+    document.getElementById('dc-gps-coords').style.display='none';
+  }
+
+  document.getElementById('dc-cycling').textContent=(S.last_cycling_time&&S.last_cycling_time!=='0')?S.last_cycling_time+'s':'0';
+  document.getElementById('dc-imei').textContent=S.imei||'—';
+  document.getElementById('last-upd').textContent=timeStr();
+  document.getElementById('hb-count').textContent=hbCount;
+}
+
+function renderDiag() {
+  document.getElementById('d-wb').textContent=navigator.bluetooth?'Supported ✓':'NOT SUPPORTED ✗';
+  document.getElementById('d-wb').className='dv '+(navigator.bluetooth?'ok':'er');
+  const lk=String(S.locked);
+  const lmap={'-1':'Unknown (-1)','0':'UNLOCKED (0)','1':'LOCKED (1)'};
+  const lcls={'-1':'wa','0':'ok','1':'er'};
+  document.getElementById('d-locked').textContent=lmap[lk]||lk;
+  document.getElementById('d-locked').className='dv '+(lcls[lk]||'wa');
+  document.getElementById('d-volt').textContent=S.voltage?S.voltage+'mV  ('+(parseInt(S.voltage)/100).toFixed(2)+'V)':'—';
+  document.getElementById('d-pwr').textContent=S.power?S.power+'%':'—';
+  document.getElementById('d-sig').textContent=S.signal||'—';
+  document.getElementById('d-chg').textContent=S.charging>=0?(S.charging?'Yes ⚡':'No'):'—';
+  document.getElementById('d-gps').textContent=S.gps_valid?'Valid ✓':'Invalid / No fix';
+  document.getElementById('d-gps').className='dv '+(S.gps_valid?'ok':'wa');
+  document.getElementById('d-ls').textContent=S.locking_state;
+  document.getElementById('d-login').textContent=S.loggin_state;
+  document.getElementById('d-msgtype').textContent=S.last_msg_type||'—';
+  updateDiagHS();
+}
+
+function renderAll() { renderControl(); renderDashboard(); renderDiag(); }
+
+function pulseHeartbeat() {
+  const dot=document.getElementById('hb-dot');
+  const txt=document.getElementById('hb-txt');
+  txt.textContent='HB @ '+timeStr()+' · locked='+S.locked+' · pwr='+S.power+'% · #'+hbCount;
+  dot.classList.add('beat');
+  setTimeout(()=>dot.classList.remove('beat'),600);
+}
+
+function addUART(msg, cls) {
+  const box=document.getElementById('uart-box');
+  const el=document.createElement('div');
+  el.className='ul '+cls;
+  el.textContent=timeStr()+' '+msg;
+  box.insertBefore(el,box.firstChild);
+  while(box.children.length>100)box.removeChild(box.lastChild);
+}
+
+function switchTab(name) {
+  const names=['control','dashboard','diag'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+if(!navigator.bluetooth){
+  document.getElementById('no-bt').style.display='block';
+  addUART('Web Bluetooth NOT supported — use Chrome on Android','uerr');
+}else{
+  addUART('Web Bluetooth ready ✓','uok');
+  addUART('Protocol: o2.bike SCOR/SCOS — 2-step handshake','uinfo');
+  addUART('0xFF 0xFF header + #\\n terminator','uinfo');
+  addUART('Tap Scan & Connect to pair your IoT box','uinfo');
+}
+renderAll();
 </script>
 </body>
 </html>
