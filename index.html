@@ -518,8 +518,8 @@ function handleNUSAscii(text){
       const op=p[4]==='1'?'lock':'unlock';
       const opKey=p[5],ts=p[7]||String(nowTs()),imei=S.imei||'867584030291749';
       addUART(`R0 ack: op=${op} key=${opKey}`,'uok');
-      if(op==='unlock')writeBLEAscii(`\xFF\xFF*SCOS,${VENDOR},${imei},L0,${opKey},${USER_ID},${ts}#\n`);
-      else writeBLEAscii(`\xFF\xFF*SCOS,${VENDOR},${imei},L1,${opKey}#\n`);
+      if(op==='unlock') writeBLEAsciiPlain(`*SCOS,OM,${imei},L0,${opKey},${USER_ID},${ts}#\n`);
+      else writeBLEAsciiPlain(`*SCOS,OM,${imei},L1,${opKey}#\n`);
       break;
     case 'V0':addUART('V0 beep ack ✅','uok');break;
     case 'S8':addUART('S8 ring ack ✅','uok');break;
@@ -546,96 +546,73 @@ async function handleRX(chunk){
 
 // ── Send helpers ──────────────────────────────────────────────────────────────
 async function writeBLE(bytes){if(!txChar)throw new Error('Not connected');await txChar.writeValue(bytes);addUART(`→ BIN [${Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(' ')}]`,'utx');}
-async function writeBLEAscii(cmd){if(!txChar)throw new Error('Not connected');await txChar.writeValue(new TextEncoder().encode(cmd));addUART('→ ASCII: '+cmd.trim(),'utx');}
+async function writeBLEAscii(cmd){if(!txChar)throw new Error('Not connected');await txChar.writeValue(new TextEncoder().encode(cmd));addUART('→ ASCII(0xFF): '+cmd.trim(),'utx');}
+// Plain ASCII — NO 0xFF 0xFF prefix. Required for S7, S8, V0 on v01.04 firmware.
+async function writeBLEAsciiPlain(cmd){if(!txChar)throw new Error('Not connected');await txChar.writeValue(new TextEncoder().encode(cmd));addUART('→ ASCII: '+cmd.trim(),'utx');}
 async function sendCmd_Raw(cmd,data){await writeBLE(buildFrame(cmd,data,keyOnce));}
 async function sendCmd_Auth(keyBytes){addUART(`→ 0x01 auth: "${currentKey?.label}"…`,'usys');await writeBLE(buildFrame(0x01,keyBytes,0x00));}
 async function sendCmd_Query(){await sendCmd_Raw(0x31,[0x01]);}
 async function sendCmd_Unlock(){lockBusy=true;renderControl();setStepLabel('Sending unlock…');const ts=nowTs(),uid=USER_ID;await sendCmd_Raw(0x05,[0x01,(uid>>24)&0xFF,(uid>>16)&0xFF,(uid>>8)&0xFF,uid&0xFF,(ts>>24)&0xFF,(ts>>16)&0xFF,(ts>>8)&0xFF,ts&0xFF,0x00]);}
 async function sendCmd_Lock(){lockBusy=true;renderControl();setStepLabel('Sending lock…');await sendCmd_Raw(0x15,[0x01]);}
 
-// ── BEEP — binary only ────────────────────────────────────────────────────────
-// V0 and S8 have no defined binary CMD in protocol docs.
-// Strategy: send 0x61 (scooter settings) with throttle=2 as an alert signal,
-// AND use 0x60 query as a ping, AND embed ASCII V0/S8 as raw bytes in a
-// binary frame DATA field (device may support this undocumented mode).
+// ── BEEP — plain ASCII *SCOS commands (device uses v01.04 firmware) ──────────
+// Device ignores binary 0x56/0x53/0x61 for beep.
+// Must send plain ASCII: *SCOS,OM,IMEI,V0,2#\n and *SCOS,OM,IMEI,S8,5,0#\n
+// WITHOUT 0xFF 0xFF prefix — the older firmware parses raw ASCII on the NUS RX char.
 async function handleBeep(){
   if(phase!=='ready')return;
-  if(hsPhase!=='ready'){pendingCmd=()=>handleBeep();keyAutoIdx=0;failedKeys=[];await startAuth(KNOWN_KEYS[0]);return;}
   beepOn=!beepOn;
   const btn=document.getElementById('qc-beep');
   btn.textContent=beepOn?'📢 Ringing…':'📢 Find Scooter';
   btn.classList.toggle('active-qc',beepOn);
-  addUART(`Beep ${beepOn?'ON':'OFF'} — sending binary beep commands…`,'usys');
-
-  // METHOD 1: 0x61 binary — set throttle response = 2 (open) as beep trigger
-  // DATA: [headlight(0=no change), mode(0=no change), throttle(2=open/1=close), taillight(0=no change)]
-  // Some firmware interprets throttle toggle as horn/beep signal
-  try{await sendCmd_Raw(0x61,[0,0,beepOn?2:1,0]);}catch(e){addUART('0x61 beep err: '+e.message,'uerr');}
-  await delay(200);
-
-  // METHOD 2: Embed ASCII "V0,2" command bytes inside a binary DATA frame
-  // CMD=0x56 (V in ASCII), data=bytes of "0,2" — some IoT boxes decode this
-  const v0data=beepOn?[0x30,0x2C,0x32]:[0x30,0x2C,0x31]; // "0,2" or "0,1"
-  try{await sendCmd_Raw(0x56,v0data);}catch(e){}
-  await delay(200);
-
-  // METHOD 3: Binary frame with CMD=0x53 (S in ASCII), data=bytes of "8,5,0"
-  // Encodes S8 ring command in binary frame format
-  const s8data=beepOn?[0x38,0x2C,0x35,0x2C,0x30]:[0x38,0x2C,0x30,0x2C,0x30]; // "8,5,0" or "8,0,0"
-  try{await sendCmd_Raw(0x53,s8data);}catch(e){}
-  await delay(200);
-
-  // METHOD 4: 0x61 rapid lights flash — visual alarm (guaranteed to work if 0x61 works for lights)
-  if(beepOn){
-    let flashes=0;
-    const flashInterval=setInterval(async()=>{
-      if(!beepOn||flashes>=6){clearInterval(flashInterval);return;}
-      try{await sendCmd_Raw(0x61,[flashes%2===0?2:1,0,0,flashes%2===0?2:1]);}catch(e){}
-      flashes++;
-    },400);
-  }else{
-    // Turn lights back off
-    try{await sendCmd_Raw(0x61,[1,0,0,1]);}catch(e){}
-  }
+  const imei=S.imei||'867584030291749';
+  addUART(`Beep ${beepOn?'ON':'OFF'} → plain ASCII commands`,'usys');
 
   if(beepOn){
+    // V0,2 = play "find a car" sound (§1.3.11)
+    await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,2#\n`);
+    await delay(300);
+    // S8,5,0 = ring for 5 seconds (§2.1.7 v01.04)
+    await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,5,0#\n`);
+    // Auto stop after 5s
     setTimeout(async()=>{
       if(beepOn){
         beepOn=false;
         document.getElementById('qc-beep').textContent='📢 Find Scooter';
         document.getElementById('qc-beep').classList.remove('active-qc');
-        try{await sendCmd_Raw(0x61,[0,0,1,0]);}catch(e){}
-        addUART('Beep auto-stopped after 5s','usys');
+        await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,1#\n`);
+        await delay(200);
+        await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,0,0#\n`);
+        addUART('Beep auto-stopped','usys');
         renderAll();
       }
     },5000);
+  } else {
+    await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,1#\n`);
+    await delay(200);
+    await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,0,0#\n`);
   }
-  renderAll();
 }
 
-// ── LIGHTS — binary 0x61 only ──────────────────────────────────────────────────
-// 0x61 DATA: [headlight, mode, throttle, taillight]
-// Values: 0=no change, 1=off, 2=on
+// ── LIGHTS — plain ASCII S7 command ──────────────────────────────────────────
+// 0x61 binary is being misinterpreted as LOCK by this firmware.
+// Must use ASCII S7: *SCOS,OM,IMEI,S7,{headlight},{mode},{throttle},{taillight}#\n
+// Values: 1=off, 2=on, 0=no change
 async function handleLight(){
   if(phase!=='ready')return;
-  if(hsPhase!=='ready'){pendingCmd=()=>handleLight();keyAutoIdx=0;failedKeys=[];await startAuth(KNOWN_KEYS[0]);return;}
   lightOn=!lightOn;
   const btn=document.getElementById('qc-light');
   btn.classList.toggle('active-green',lightOn);
   btn.textContent=lightOn?'💡 Lights ON':'💡 Lights';
+  const imei=S.imei||'867584030291749';
   const v=lightOn?2:1;
-  addUART(`Lights ${lightOn?'ON':'OFF'} → 0x61 [${v},0,0,${v}]…`,'usys');
+  addUART(`Lights ${lightOn?'ON':'OFF'} → plain ASCII S7 [${v},0,0,${v}]`,'usys');
 
-  // Send 0x61 with headlight + taillight
-  try{
-    await sendCmd_Raw(0x61,[v,0,0,v]);
-    addUART('0x61 lights command sent ✓','uok');
-  }catch(e){addUART('0x61 lights err: '+e.message,'uerr');}
-  await delay(300);
-
-  // Also try 0x61 with mode set (in case device needs mode to activate lights)
-  // mode: 1=low speed, 2=medium, 3=high — some devices activate lights in specific modes
-  try{await sendCmd_Raw(0x61,[v,2,0,v]);}catch(e){}
+  // S7: headlight=v, mode=0(no change), throttle=0(no change), taillight=v
+  await writeBLEAsciiPlain(`*SCOS,OM,${imei},S7,${v},0,0,${v}#\n`);
+  await delay(200);
+  // Also try S4 for key-switch headlight (field 5)
+  await writeBLEAsciiPlain(`*SCOS,OM,${imei},S4,0,0,0,0,${v},0,0,0#\n`);
 }
 
 // ── KEY MANAGEMENT ────────────────────────────────────────────────────────────
@@ -721,8 +698,9 @@ async function handleToggle(){
 }
 async function handleQuery(){
   if(phase!=='ready')return;
-  if(hsPhase==='ready')await sendCmd_Query();
-  else{const imei=S.imei||'867584030291749';await writeBLEAscii(`*SCOR,${VENDOR},${imei},Q0,412,80,28#\n`);}
+  const imei=S.imei||'867584030291749';
+  if(hsPhase==='ready') await sendCmd_Query();
+  await writeBLEAsciiPlain(`*SCOR,OM,${imei},Q0,412,80,28#\n`);
 }
 async function handleGetInfo(){if(hsPhase!=='ready'){addUART('Auth needed first','uerr');return;}await sendCmd_Raw(0x60,[0x01]);}
 async function handleDisconnect(){try{bleDevice?.gatt?.disconnect();}catch{}txChar=null;bleDevice=null;hsPhase='idle';keyOnce=0;lockBusy=false;setPhase('idle');document.getElementById('scan-btn').disabled=false;document.getElementById('scan-txt').textContent='Scan & Connect';document.getElementById('scan-emoji').textContent='📡';document.getElementById('key-picker').style.display='none';addUART('Disconnected.','uinfo');renderAll();}
