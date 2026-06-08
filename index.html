@@ -371,6 +371,20 @@ header{
     <div class="diag-title">UART MONITOR (TX=orange · RX=purple · SYS=blue)</div>
     <div id="uart-box"></div>
   </div>
+  <!-- Light/Beep test panel -->
+  <div class="diag-sec">
+    <div class="diag-title">LIGHTS / BEEP TEST — tap each, watch for purple RX response</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0">
+      <button class="act" onclick="testCmd('bin61on')" style="font-size:9px">0x61 [2,0,0,2]<br/>BIN lights ON</button>
+      <button class="act" onclick="testCmd('bin61off')" style="font-size:9px">0x61 [1,0,0,1]<br/>BIN lights OFF</button>
+      <button class="act" onclick="testCmd('ffS7on')" style="font-size:9px">0xFF0xFF S7,2,0,0,2<br/>PREFIX lights ON</button>
+      <button class="act" onclick="testCmd('ffS7off')" style="font-size:9px">0xFF0xFF S7,1,0,0,1<br/>PREFIX lights OFF</button>
+      <button class="act" onclick="testCmd('ascS7on')" style="font-size:9px">ASCII S7,2,0,0,2<br/>PLAIN lights ON</button>
+      <button class="act" onclick="testCmd('ffV02')" style="font-size:9px">0xFF0xFF V0,2<br/>PREFIX beep ON</button>
+      <button class="act" onclick="testCmd('ascV02')" style="font-size:9px">ASCII V0,2<br/>PLAIN beep</button>
+      <button class="act" onclick="testCmd('ffS85')" style="font-size:9px">0xFF0xFF S8,5,0<br/>PREFIX ring</button>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -547,18 +561,29 @@ async function handleRX(chunk){
 // ── Send helpers ──────────────────────────────────────────────────────────────
 async function writeBLE(bytes){if(!txChar)throw new Error('Not connected');await txChar.writeValue(bytes);addUART(`→ BIN [${Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(' ')}]`,'utx');}
 async function writeBLEAscii(cmd){if(!txChar)throw new Error('Not connected');await txChar.writeValue(new TextEncoder().encode(cmd));addUART('→ ASCII(0xFF): '+cmd.trim(),'utx');}
-// Plain ASCII — NO 0xFF 0xFF prefix. Required for S7, S8, V0 on v01.04 firmware.
+// Plain ASCII — no prefix
 async function writeBLEAsciiPlain(cmd){if(!txChar)throw new Error('Not connected');await txChar.writeValue(new TextEncoder().encode(cmd));addUART('→ ASCII: '+cmd.trim(),'utx');}
+// 0xFF 0xFF prefix as ACTUAL BYTES then ASCII — exactly what box-server sends over TCP
+async function writeBLEWithPrefix(cmd){
+  if(!txChar)throw new Error('Not connected');
+  const ascii=new TextEncoder().encode(cmd);
+  const buf=new Uint8Array(2+ascii.length);
+  buf[0]=0xFF;buf[1]=0xFF;buf.set(ascii,2);
+  await txChar.writeValue(buf);
+  addUART('→ 0xFF0xFF+ASCII: '+cmd.trim(),'utx');
+}
 async function sendCmd_Raw(cmd,data){await writeBLE(buildFrame(cmd,data,keyOnce));}
 async function sendCmd_Auth(keyBytes){addUART(`→ 0x01 auth: "${currentKey?.label}"…`,'usys');await writeBLE(buildFrame(0x01,keyBytes,0x00));}
 async function sendCmd_Query(){await sendCmd_Raw(0x31,[0x01]);}
 async function sendCmd_Unlock(){lockBusy=true;renderControl();setStepLabel('Sending unlock…');const ts=nowTs(),uid=USER_ID;await sendCmd_Raw(0x05,[0x01,(uid>>24)&0xFF,(uid>>16)&0xFF,(uid>>8)&0xFF,uid&0xFF,(ts>>24)&0xFF,(ts>>16)&0xFF,(ts>>8)&0xFF,ts&0xFF,0x00]);}
 async function sendCmd_Lock(){lockBusy=true;renderControl();setStepLabel('Sending lock…');await sendCmd_Raw(0x15,[0x01]);}
 
-// ── BEEP — plain ASCII *SCOS commands (device uses v01.04 firmware) ──────────
-// Device ignores binary 0x56/0x53/0x61 for beep.
-// Must send plain ASCII: *SCOS,OM,IMEI,V0,2#\n and *SCOS,OM,IMEI,S8,5,0#\n
-// WITHOUT 0xFF 0xFF prefix — the older firmware parses raw ASCII on the NUS RX char.
+// ── BEEP ──────────────────────────────────────────────────────────────────────
+// The device ignores plain ASCII. It ignores binary 0x56/0x53.
+// The ONLY commands it acknowledges are binary 0xA3A4 frames.
+// V0/S8 have no binary equivalent in spec — but the 0xFF0xFF*SCOS prefix
+// is what the BOX-SERVER uses over TCP. Over BLE the device may accept
+// 0xFF 0xFF *SCOS prefix WITH the NUS characteristic write.
 async function handleBeep(){
   if(phase!=='ready')return;
   beepOn=!beepOn;
@@ -566,38 +591,40 @@ async function handleBeep(){
   btn.textContent=beepOn?'📢 Ringing…':'📢 Find Scooter';
   btn.classList.toggle('active-qc',beepOn);
   const imei=S.imei||'867584030291749';
-  addUART(`Beep ${beepOn?'ON':'OFF'} → plain ASCII commands`,'usys');
+  addUART(`Beep ${beepOn?'ON':'OFF'}`,'usys');
+
+  // FORMAT 1: 0xFF 0xFF prefix + ASCII (what box-server sends over TCP, may work over BLE too)
+  const hdr='\xFF\xFF*SCOS';
+  await writeBLEWithPrefix(`${hdr},OM,${imei},V0,${beepOn?2:1}#\n`);
+  await delay(250);
+  await writeBLEWithPrefix(`${hdr},OM,${imei},S8,${beepOn?5:0},0#\n`);
+  await delay(250);
+
+  // FORMAT 2: plain ASCII (works on some firmware variants)
+  await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,${beepOn?2:1}#\n`);
+  await delay(250);
+  await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,${beepOn?5:0},0#\n`);
 
   if(beepOn){
-    // V0,2 = play "find a car" sound (§1.3.11)
-    await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,2#\n`);
-    await delay(300);
-    // S8,5,0 = ring for 5 seconds (§2.1.7 v01.04)
-    await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,5,0#\n`);
-    // Auto stop after 5s
     setTimeout(async()=>{
       if(beepOn){
         beepOn=false;
         document.getElementById('qc-beep').textContent='📢 Find Scooter';
         document.getElementById('qc-beep').classList.remove('active-qc');
-        await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,1#\n`);
+        await writeBLEWithPrefix(`${hdr},OM,${imei},V0,1#\n`);
         await delay(200);
-        await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,0,0#\n`);
+        await writeBLEWithPrefix(`${hdr},OM,${imei},S8,0,0#\n`);
         addUART('Beep auto-stopped','usys');
         renderAll();
       }
     },5000);
-  } else {
-    await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,1#\n`);
-    await delay(200);
-    await writeBLEAsciiPlain(`*SCOS,OM,${imei},S8,0,0#\n`);
   }
 }
 
-// ── LIGHTS — plain ASCII S7 command ──────────────────────────────────────────
-// 0x61 binary is being misinterpreted as LOCK by this firmware.
-// Must use ASCII S7: *SCOS,OM,IMEI,S7,{headlight},{mode},{throttle},{taillight}#\n
-// Values: 1=off, 2=on, 0=no change
+// ── LIGHTS ─────────────────────────────────────────────────────────────────────
+// 0x61 is silently ignored (no ACK). The 0x15 responses in logs are spontaneous
+// lock events from the device, not responses to 0x61.
+// Try every possible 0x61 DATA format + 0xFF0xFF ASCII S7 prefix.
 async function handleLight(){
   if(phase!=='ready')return;
   lightOn=!lightOn;
@@ -605,14 +632,34 @@ async function handleLight(){
   btn.classList.toggle('active-green',lightOn);
   btn.textContent=lightOn?'💡 Lights ON':'💡 Lights';
   const imei=S.imei||'867584030291749';
-  const v=lightOn?2:1;
-  addUART(`Lights ${lightOn?'ON':'OFF'} → plain ASCII S7 [${v},0,0,${v}]`,'usys');
+  const v=lightOn?2:1; // 1=off, 2=on
+  const hdr='\xFF\xFF*SCOS';
+  addUART(`Lights ${lightOn?'ON':'OFF'}`,'usys');
 
-  // S7: headlight=v, mode=0(no change), throttle=0(no change), taillight=v
+  // FORMAT 1: Binary 0x61 — correct per spec §2.5.10
+  // DATA[0]=headlight, DATA[1]=mode, DATA[2]=throttle, DATA[3]=taillight
+  // 0=no change, 1=off, 2=on
+  await sendCmd_Raw(0x61,[v,0,0,v]);           // headlight+taillight
+  await delay(200);
+  await sendCmd_Raw(0x61,[v,0,0,0]);           // headlight only
+  await delay(200);
+  await sendCmd_Raw(0x61,[0,0,0,v]);           // taillight only
+  await delay(200);
+  await sendCmd_Raw(0x61,[v,v,0,v]);           // headlight+mode+taillight
+  await delay(200);
+
+  // FORMAT 2: 0xFF 0xFF + ASCII S7 (what box-server sends)
+  await writeBLEWithPrefix(`${hdr},OM,${imei},S7,${v},0,0,${v}#\n`);
+  await delay(200);
+
+  // FORMAT 3: Plain ASCII S7
   await writeBLEAsciiPlain(`*SCOS,OM,${imei},S7,${v},0,0,${v}#\n`);
   await delay(200);
-  // Also try S4 for key-switch headlight (field 5)
-  await writeBLEAsciiPlain(`*SCOS,OM,${imei},S4,0,0,0,0,${v},0,0,0#\n`);
+
+  // FORMAT 4: S6 request — query scooter info, some firmware activates lights as side effect
+  await sendCmd_Raw(0x60,[0x01]);
+
+  addUART(`All light formats sent — check if scooter responded`,'usys');
 }
 
 // ── KEY MANAGEMENT ────────────────────────────────────────────────────────────
@@ -696,7 +743,23 @@ async function handleToggle(){
   if(hsPhase!=='ready'){pendingCmd=isLocked?sendCmd_Unlock:sendCmd_Lock;addUART('Retrying auth first…','usys');keyAutoIdx=0;failedKeys=[];await startAuth(KNOWN_KEYS[0]);return;}
   if(isLocked)await sendCmd_Unlock();else await sendCmd_Lock();
 }
-async function handleQuery(){
+async function testCmd(id){
+  if(phase!=='ready'){addUART('Connect first','uerr');return;}
+  const imei=S.imei||'867584030291749';
+  const hdr='\xFF\xFF*SCOS';
+  addUART(`TEST: ${id}`,'usys');
+  switch(id){
+    case 'bin61on':  await sendCmd_Raw(0x61,[2,0,0,2]); break;
+    case 'bin61off': await sendCmd_Raw(0x61,[1,0,0,1]); break;
+    case 'ffS7on':   await writeBLEWithPrefix(`${hdr},OM,${imei},S7,2,0,0,2#\n`); break;
+    case 'ffS7off':  await writeBLEWithPrefix(`${hdr},OM,${imei},S7,1,0,0,1#\n`); break;
+    case 'ascS7on':  await writeBLEAsciiPlain(`*SCOS,OM,${imei},S7,2,0,0,2#\n`); break;
+    case 'ffV02':    await writeBLEWithPrefix(`${hdr},OM,${imei},V0,2#\n`); break;
+    case 'ascV02':   await writeBLEAsciiPlain(`*SCOS,OM,${imei},V0,2#\n`); break;
+    case 'ffS85':    await writeBLEWithPrefix(`${hdr},OM,${imei},S8,5,0#\n`); break;
+  }
+  addUART(`Sent ${id} — watch for purple RX ↑`,'usys');
+}
   if(phase!=='ready')return;
   const imei=S.imei||'867584030291749';
   if(hsPhase==='ready') await sendCmd_Query();
