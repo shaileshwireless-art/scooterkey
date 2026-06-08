@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#080810"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="ScooterKey"/>
-<title>ScooterKeyv3</title>
+<title>ScooterKey</title>
 <link rel="manifest" href="manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -166,7 +166,7 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
 <div id="app">
 
 <header>
-  <div class="logo">⚡ Scooterv3<em>Key</em></div>
+  <div class="logo">⚡ Scooter<em>Key</em></div>
   <div style="display:flex;align-items:center;gap:8px">
     <div id="conn-dot"></div>
     <span id="conn-label" style="font-size:11px;color:var(--muted);font-family:var(--mono)">Disconnected</span>
@@ -174,7 +174,7 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
 </header>
 
 <div id="tabs">
-  <div class="tab active" onclick="switchTab('control')">CONTROLv3</div>
+  <div class="tab active" onclick="switchTab('control')">CONTROL</div>
   <div class="tab" onclick="switchTab('dashboard')">DASHBOARD</div>
   <div class="tab" onclick="switchTab('diag')">DIAGNOSTIC</div>
 </div>
@@ -216,7 +216,7 @@ header{padding:16px 18px 12px;display:flex;justify-content:space-between;align-i
 
   <!-- Quick controls -->
   <div id="qc-row">
-    <button class="qc" id="qc-beep" onclick="handleBeep()">📢 Find</button>
+    <button class="qc" id="qc-beep" onclick="handleBeep()">📢 Find Scooter</button>
     <button class="qc" id="qc-light" onclick="handleLight()">💡 Lights</button>
     <button class="qc" id="qc-refresh" onclick="handleQuery()">🔄 Refresh</button>
   </div>
@@ -478,7 +478,7 @@ let currentKey=null;       // {label, bytes} currently being tried
 let failedKeys=[];         // keys that returned failure
 let keyAutoIdx=0;          // index into KNOWN_KEYS for auto-retry
 let pendingCmd=null;
-let lockBusy=false, lightOn=false;
+let lockBusy=false, lightOn=false, beepOn=false;
 let activeUUIDSet=null;    // which UUID set connected on
 const VENDOR='OM';
 const USER_ID=1234;
@@ -593,6 +593,10 @@ function handleNUSAscii(text){
     case 'L0': S.locked=0; S.locking_state=0; lockBusy=false; addUART('L0: UNLOCKED','uok'); break;
     case 'L1': S.locked=1; S.locking_state=0; lockBusy=false; addUART('L1: LOCKED','uok'); break;
     case 'K0': addUART('K0 BLE KEY: '+p[4],'uinfo'); break;
+    case 'V0': addUART('V0 beep ack: play='+p[4],'uok'); break;
+    case 'S8': addUART('S8 ring ack: sec='+p[4],'uok'); break;
+    case 'S7': addUART('S7 settings ack: headlight='+p[4]+' taillight='+p[7],'uok'); break;
+    case 'S4': addUART('S4 settings ack','uok'); break;
     case 'R0':
       // ASCII R0 response means TCP protocol mode — complete handshake
       const op=p[4]==='1'?'lock':'unlock';
@@ -887,20 +891,84 @@ async function handleToggle(){
 async function handleBeep(){
   if(phase!=='ready') return;
   const imei=S.imei||'867584030291749';
-  addUART('Sending beep V0,2…','usys');
-  // Try both: binary 0x?? and ASCII V0
-  try{ await writeBLEAscii(`\xFF\xFF*SCOS,${VENDOR},${imei},V0,2#\n`); }catch(e){}
+  const hdr='\xFF\xFF*SCOS';
+
+  // Track beep state for toggle
+  beepOn=!beepOn;
+  const btn=document.getElementById('qc-beep');
+  btn.textContent=beepOn?'📢 Ringing…':'📢 Find';
+  btn.classList.toggle('active-qc',beepOn);
+
+  addUART(`Sending alarm/beep (beepOn=${beepOn})…`,'usys');
+
+  // Try ALL known alarm/beep formats — device will respond to whichever it supports:
+
+  // 1. V0,2 = "Find a car tip" beep (from IoT_communication_v3.pdf §1.3.11)
+  //    *SCOS,OM,IMEI,V0,2#
+  try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},V0,2#\n`); }catch(e){ addUART('V0,2 send err: '+e.message,'uerr'); }
+  await delay(200);
+
+  // 2. S8 = ringing/find bike (from Omni_GPRS_GPS_BLE v01.04 §2.1.7)
+  //    *SCOS,OM,IMEI,S8,5,0#  (ring for 5 seconds)
+  try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},S8,${beepOn?5:0},0#\n`); }catch(e){ addUART('S8 send err: '+e.message,'uerr'); }
+  await delay(200);
+
+  // 3. Binary 0x61 with beep pattern via S7 mode (some firmware variants)
+  //    ASCII S7: headlight=2(on)/1(off), mode=0, throttle=0, taillight=2/1
+  try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},S7,${beepOn?2:1},0,0,${beepOn?2:1}#\n`); }catch(e){}
+
+  // Auto-stop beep after 5 seconds if it was turned on
+  if(beepOn){
+    setTimeout(async()=>{
+      if(beepOn){
+        beepOn=false;
+        document.getElementById('qc-beep').textContent='📢 Find';
+        document.getElementById('qc-beep').classList.remove('active-qc');
+        try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},V0,1#\n`); }catch(e){}
+        try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},S8,0,0#\n`); }catch(e){}
+        addUART('Beep auto-stopped after 5s','usys');
+      }
+    },5000);
+  }
 }
 
 async function handleLight(){
   if(phase!=='ready') return;
-  if(hsPhase!=='ready'){ pendingCmd=()=>handleLight(); keyAutoIdx=0; failedKeys=[]; await startAuth(KNOWN_KEYS[0]); return; }
+  const imei=S.imei||'867584030291749';
+  const hdr='\xFF\xFF*SCOS';
   lightOn=!lightOn;
-  document.getElementById('qc-light').classList.toggle('active-qc',lightOn);
-  document.getElementById('qc-light').textContent=lightOn?'💡 ON':'💡 Lights';
-  const v=lightOn?2:1;
-  await sendCmd_Raw(0x61,[v,0,0,v]);
+
+  const btn=document.getElementById('qc-light');
+  btn.classList.toggle('active-qc',lightOn);
+  btn.textContent=lightOn?'💡 ON':'💡 Lights';
+  addUART(`Sending lights ${lightOn?'ON':'OFF'}…`,'usys');
+
+  // Try ALL known light control formats:
+
+  // 1. Binary 0x61 BLE command (IoT_communication_v3.pdf §2.5.10)
+  //    DATA: [headlight(1=off,2=on), mode(0=no change), throttle(0=no change), taillight]
+  if(hsPhase==='ready'){
+    const v=lightOn?2:1;
+    try{ await sendCmd_Raw(0x61,[v,0,0,v]); }catch(e){ addUART('0x61 err: '+e.message,'uerr'); }
+    await delay(200);
+  }
+
+  // 2. ASCII S7 command (§1.3.8) — headlight + taillight
+  //    *SCOS,OM,IMEI,S7,{headlight},{mode},{throttle},{taillight}#
+  //    1=off, 2=on, 0=no change
+  const v2=lightOn?2:1;
+  try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},S7,${v2},0,0,${v2}#\n`); }catch(e){ addUART('S7 err: '+e.message,'uerr'); }
+  await delay(200);
+
+  // 3. ASCII S4 command for some firmware (§1.3.9)
+  //    *SCOS,OM,IMEI,S4,0,0,0,0,{key_headlight},0,0,0#
+  //    field 5 = key switch headlight: 1=off, 2=on
+  try{ await writeBLEAscii(`${hdr},${VENDOR},${imei},S4,0,0,0,0,${v2},0,0,0#\n`); }catch(e){}
+
+  addUART(`Light commands sent (lightOn=${lightOn})`,'uok');
 }
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 async function handleQuery(){
   if(phase!=='ready') return;
